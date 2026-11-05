@@ -1,7 +1,7 @@
 /* Neuron detail panel. */
 .drawer { position: fixed; inset: 0; z-index: 100; visibility: hidden; transition: visibility 0s linear 0.5s; }
 .drawer.is-open { visibility: visible; transition: none; }
-.drawer-scrim { position: absolute; inset: 0; background: rgba(5, 5, 6, 0.55); opacity: 0; transition: opacity 0.4s var(--ease); }
+.drawer-scrim { position: absolute; inset: 0; background: rgba(18, 18, 18, 0.22); opacity: 0; transition: opacity 0.4s var(--ease); }
 .drawer.is-open .drawer-scrim { opacity: 1; }
 
 .drawer-panel {
@@ -13,10 +13,10 @@
   overflow-y: auto;
   overscroll-behavior: contain;
   padding: 28px clamp(22px, 3vw, 36px) 40px;
-  border: 1px solid var(--rule-d);
+  border: 1px solid var(--rule);
   border-radius: 18px;
-  background: var(--night-2);
-  color: var(--chalk);
+  background: var(--paper-2);
+  color: var(--ink);
   transform: translateX(calc(100% + 20px));
   transition: transform 0.55s var(--ease);
   outline: none;
@@ -31,11 +31,11 @@
   gap: 8px;
   align-items: center;
   padding: 6px 10px;
-  border: 1px solid var(--rule-d);
+  border: 1px solid var(--rule);
   border-radius: 999px;
-  background: var(--night-2);
+  background: var(--paper-2);
   font: 400 11px/1 var(--mono);
-  color: var(--chalk-2);
+  color: var(--ink-2);
   z-index: 1;
   transition: color 0.2s, border-color 0.2s;
 }
@@ -49,36 +49,36 @@
 .drawer-body > :nth-child(n + 4) { animation-delay: 0.12s; }
 @keyframes drawer-in { from { opacity: 0; transform: translateY(10px); } }
 
-.drawer-kicker { display: flex; flex-wrap: wrap; gap: 4px 14px; font: 400 11px/1.4 var(--mono); color: var(--chalk-3); letter-spacing: 0.04em; padding-right: 80px; }
+.drawer-kicker { display: flex; flex-wrap: wrap; gap: 4px 14px; font: 400 11px/1.4 var(--mono); color: var(--ink-3); letter-spacing: 0.04em; padding-right: 80px; }
 .drawer-kicker span:first-child { color: var(--accent); }
 .drawer-act { display: flex; align-items: flex-end; gap: 3px; height: 28px; }
-.drawer-act i { flex: 1; height: calc(var(--a) * 100%); background: var(--chalk); opacity: calc(0.25 + var(--a) * 0.75); border-radius: 1px; }
+.drawer-act i { flex: 1; height: calc(var(--a) * 100%); background: var(--ink); opacity: calc(0.25 + var(--a) * 0.75); border-radius: 1px; }
 .drawer-act i:nth-child(7n + 3) { background: var(--accent); }
 .drawer-title { font: 400 clamp(34px, 4vw, 48px) / 1 var(--serif); letter-spacing: -0.012em; text-wrap: balance; }
 .drawer-title--mono { font: 400 clamp(28px, 3.4vw, 40px) / 1.1 var(--mono); letter-spacing: -0.02em; }
-.drawer-meta { font: 400 12.5px/1.4 var(--mono); color: var(--chalk-2); margin-top: -8px; }
-.drawer-lead { font-size: 17.5px; line-height: 1.55; color: var(--chalk); text-wrap: pretty; }
-.drawer-points { padding: 0; list-style: none; display: grid; gap: 10px; color: var(--chalk-2); }
+.drawer-meta { font: 400 12.5px/1.4 var(--mono); color: var(--ink-2); margin-top: -8px; }
+.drawer-lead { font-size: 17.5px; line-height: 1.55; color: var(--ink); text-wrap: pretty; }
+.drawer-points { padding: 0; list-style: none; display: grid; gap: 10px; color: var(--ink-2); }
 .drawer-points li { position: relative; padding-left: 20px; line-height: 1.55; }
 .drawer-points li::before { content: ''; position: absolute; left: 2px; top: 0.62em; width: 8px; height: 1px; background: var(--accent); }
-.drawer-fig { border-radius: 12px; overflow: hidden; background: var(--paper); border: 1px solid var(--rule-d); }
+.drawer-fig { border-radius: 12px; overflow: hidden; background: var(--paper); border: 1px solid var(--rule); }
 .drawer-fig img { width: 100%; max-height: 300px; object-fit: contain; margin: 0 auto; }
 .drawer-links { display: flex; flex-wrap: wrap; gap: 8px; }
-.drawer-links .btn { border-color: var(--rule-d); }
+.drawer-links .btn { border-color: var(--rule); }
 .drawer-links .btn:hover { border-color: var(--accent); color: var(--accent); }
 
-.drawer-related { display: grid; gap: 12px; padding-top: 18px; border-top: 1px solid var(--rule-d); }
+.drawer-related { display: grid; gap: 12px; padding-top: 18px; border-top: 1px solid var(--rule); }
 .chips { display: flex; flex-wrap: wrap; gap: 6px; }
-.chip { padding: 6px 12px; border-radius: 999px; border: 1px solid var(--rule-d); font: 400 12px/1 var(--mono); transition: border-color 0.2s, color 0.2s; }
+.chip { padding: 6px 12px; border-radius: 999px; border: 1px solid var(--rule); font: 400 12px/1 var(--mono); transition: border-color 0.2s, color 0.2s; }
 .chip::before { content: ''; display: inline-block; width: 6px; height: 6px; border-radius: 50%; margin-right: 8px; background: var(--g-ml); vertical-align: 1px; }
 .chip[data-group='genai']::before { background: var(--g-genai); }
 .chip[data-group='opt']::before { background: var(--g-opt); }
 .chip[data-group='eng']::before { background: var(--g-eng); }
-.chip:hover { border-color: var(--chalk-2); }
+.chip:hover { border-color: var(--ink-2); }
 .drawer-attn { list-style: none; padding: 0; display: grid; }
-.drawer-attn button { width: 100%; display: flex; justify-content: space-between; gap: 16px; padding: 12px 0; border-bottom: 1px solid var(--rule-d); text-align: left; transition: color 0.2s; }
+.drawer-attn button { width: 100%; display: flex; justify-content: space-between; gap: 16px; padding: 12px 0; border-bottom: 1px solid var(--rule); text-align: left; transition: color 0.2s; }
 .drawer-attn button:hover { color: var(--accent); }
-.drawer-attn small { font: 400 11px/1.6 var(--mono); color: var(--chalk-3); text-align: right; }
+.drawer-attn small { font: 400 11px/1.6 var(--mono); color: var(--ink-3); text-align: right; }
 
 @media (max-width: 640px) {
   .drawer-panel { top: auto; left: 8px; right: 8px; bottom: 8px; width: auto; max-height: 86svh; transform: translateY(calc(100% + 20px)); }

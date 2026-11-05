@@ -15,10 +15,10 @@ const NEAR = 40;
 const XW = 1000; // half-width of a layer plane
 
 export function insideModel({ section, canvas, labelsRoot, hud, layers, tokens, skillGroups, onOpen }) {
-  const chalk = cssVar('--chalk') || '#ecebe6';
+  const ink = cssVar('--ink') || '#121212';
   const accent = cssVar('--accent') || '#ff4d1f';
   const mono = cssVar('--mono') || 'monospace';
-  const groupColor = Object.fromEntries(Object.keys(skillGroups).map((g) => [g, cssVar(`--g-${g}`) || chalk]));
+  const groupColor = Object.fromEntries(Object.keys(skillGroups).map((g) => [g, cssVar(`--g-${g}`) || ink]));
   const still = reducedMotion();
   const coarse = isCoarse();
   const rand = rng(2017);
@@ -295,11 +295,11 @@ export function insideModel({ section, canvas, labelsRoot, hud, layers, tokens, 
     const c0 = project(-1.06, -1.06, P.z, A);
     const c1 = project(1.06, 1.06, P.z, B);
     ctx.globalAlpha = alpha * 0.16;
-    ctx.strokeStyle = chalk;
+    ctx.strokeStyle = ink;
     ctx.lineWidth = 1;
     ctx.strokeRect(c0.x, c0.y, c1.x - c0.x, c1.y - c0.y);
     ctx.globalAlpha = alpha * 0.55;
-    ctx.fillStyle = chalk;
+    ctx.fillStyle = ink;
     ctx.font = `${Math.max(9, Math.min(13, 11 * A.s * 1.4))}px ${mono}`;
     ctx.textAlign = 'left';
     ctx.textBaseline = 'bottom';
@@ -312,7 +312,7 @@ export function insideModel({ section, canvas, labelsRoot, hud, layers, tokens, 
       const act = still ? 0 : Math.max(0, Math.sin(time * n.fr + n.ph)) ** 12;
       const r = Math.max(0.7, 2.4 * A.s * (1 + act));
       ctx.globalAlpha = alpha * (n.base + act * 0.75);
-      ctx.fillStyle = act > 0.4 ? accent : chalk;
+      ctx.fillStyle = act > 0.4 ? accent : ink;
       if (r < 1.6) ctx.fillRect(A.x - r, A.y - r, r * 2, r * 2);
       else { ctx.beginPath(); ctx.arc(A.x, A.y, r, 0, Math.PI * 2); ctx.fill(); }
     }
@@ -375,7 +375,7 @@ export function insideModel({ section, canvas, labelsRoot, hud, layers, tokens, 
     if (dB < NEAR) return;
     const alpha = Math.min(planeAlpha(Math.max(dA, NEAR + 1)) + (dA < NEAR ? 0.6 : 0), planeAlpha(dB) + 0.25);
     if (alpha <= 0.003) return;
-    ctx.strokeStyle = chalk;
+    ctx.strokeStyle = ink;
     ctx.lineWidth = 0.6;
     ctx.globalAlpha = alpha * 0.07;
     ctx.beginPath();

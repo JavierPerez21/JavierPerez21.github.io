@@ -3,18 +3,15 @@
   /* Light: paper & ink (the analytic era) */
   --paper: #f3f1eb;
   --paper-2: #e9e6dd;
+  --paper-3: #e1ddd2;
   --ink: #121212;
   --ink-2: #4a4945;
   --ink-3: #8b8a84;
   --rule: rgba(18, 18, 18, 0.12);
 
-  /* Dark: inside the machine */
-  --night: #09090a;
-  --night-2: #111113;
-  --night-3: #1a1a1d;
+  /* Light-on-dark, only for the photo lightbox */
   --chalk: #ecebe6;
   --chalk-2: #a9a7a1;
-  --chalk-3: #6d6c68;
   --rule-d: rgba(236, 235, 230, 0.12);
 
   /* One loud colour, used sparingly */
@@ -22,10 +19,10 @@
   --accent-soft: rgba(255, 77, 31, 0.14);
 
   /* Embedding clusters */
-  --g-ml: #ecebe6;
+  --g-ml: #121212;
   --g-genai: #ff4d1f;
-  --g-opt: #8fb3ff;
-  --g-eng: #9ad7b0;
+  --g-opt: #3b5bdb;
+  --g-eng: #2b8a4e;
 
   --serif: 'Instrument Serif', 'Iowan Old Style', 'Palatino Linotype', Georgia, serif;
   --sans: 'Geist', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;

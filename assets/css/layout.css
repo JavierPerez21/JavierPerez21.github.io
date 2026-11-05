@@ -1,6 +1,6 @@
 /* Persistent chrome: top bar, progress rail, footer. */
 
-/* The top bar inverts against whatever is behind it (paper or night). */
+/* The top bar inverts against whatever is behind it. */
 .topbar {
   position: fixed;
   inset: 0 0 auto 0;
@@ -93,9 +93,9 @@ html[data-chapter='model'] .rail { opacity: 0; }
   justify-content: space-between;
   gap: 16px 32px;
   padding: 32px var(--pad) 40px;
-  background: var(--night);
-  color: var(--chalk-3);
-  border-top: 1px solid var(--rule-d);
+  background: var(--paper);
+  color: var(--ink-3);
+  border-top: 1px solid var(--rule);
   font: 400 12px/1.5 var(--mono);
 }
 .footer a { transition: color 0.2s; }
