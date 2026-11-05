@@ -5,6 +5,7 @@
 import * as content from './content.js';
 import { fourierName } from './scenes/fourier.js';
 import { lifePaths } from './scenes/paths.js';
+import { seriesToSamples } from './scenes/bridge.js';
 import { insideModel } from './scenes/model.js';
 import { nextTokenSampler } from './scenes/sampler.js';
 import { createDrawer } from './ui/drawer.js';
@@ -21,13 +22,28 @@ const safely = (name, fn) => {
 safely('nav', () => initNav(content.profile));
 safely('reveal', () => initReveal());
 
-/* 01 · Fourier name */
+/* 02 · Monte Carlo paths (set up first: the Fourier pen lands on it) */
+const pathsSection = $('#paths');
+const paths = safely('paths', () => {
+  const s = pathsSection;
+  return lifePaths({
+    section: s,
+    canvas: $('canvas', s),
+    timelineRoot: $('.paths-timeline', s),
+    hud: { sample: $('[data-hud-sample]', s), t: $('[data-hud-t]', s) },
+    milestones: content.milestones,
+    now: content.NOW,
+  });
+});
+
+/* 01 · Fourier name, and the fall from it into §02 */
 const hero = $('#series');
 fetch(new URL('../data/name-glyphs.json', import.meta.url))
   .then((r) => r.json())
   .then((glyphs) => {
-    fourierName({
-      canvas: $('.hero-canvas', hero),
+    const heroCanvas = $('.hero-canvas', hero);
+    const fourier = fourierName({
+      canvas: heroCanvas,
       glyphs,
       readout: { k: $('[data-k]', hero), terms: $('[data-terms]', hero), err: $('[data-err]', hero) },
       slider: $('[data-harmonics]', hero),
@@ -35,24 +51,16 @@ fetch(new URL('../data/name-glyphs.json', import.meta.url))
       onConverged: () => hero.classList.add('is-converged'),
     });
     hero.classList.add('has-canvas');
+    if (paths) {
+      safely('bridge', () => seriesToSamples({
+        hero, heroCanvas, fourier, paths, pathsSection, plotCanvas: $('canvas', pathsSection),
+      }));
+    }
   })
   .catch((err) => {
     hero.classList.add('no-canvas');
     console.error('[fourier]', err);
   });
-
-/* 02 · Monte Carlo paths */
-safely('paths', () => {
-  const s = $('#paths');
-  lifePaths({
-    section: s,
-    canvas: $('canvas', s),
-    cardsRoot: $('.paths-cards', s),
-    hud: { sample: $('[data-hud-sample]', s), t: $('[data-hud-t]', s) },
-    milestones: content.milestones,
-    now: content.NOW,
-  });
-});
 
 /* 03 · Inside the model */
 const drawer = safely('drawer', () => createDrawer($('#drawer')));

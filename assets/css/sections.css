@@ -133,14 +133,15 @@
   margin: 0 auto;
 }
 .paths-head { display: grid; gap: 14px; }
-.paths-head .title { font-size: clamp(36px, 4.6vw, 72px); }
+.paths-head .title { font-size: clamp(30px, 3.8vw, 58px); }
 
 .paths-stage {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) clamp(260px, 26vw, 380px);
-  gap: clamp(24px, 3vw, 56px);
+  grid-template-rows: minmax(0, 1fr) auto;
+  gap: 6px;
   min-height: 0;
 }
+@media (min-width: 1200px) { .paths-stage { margin-right: 36px; } } /* clear the progress rail */
 .paths-plot { position: relative; min-height: 0; }
 .paths-plot canvas { position: absolute; inset: 0; width: 100%; height: 100%; }
 .paths-hud {
@@ -157,31 +158,67 @@
 .paths-hud span:first-child { color: var(--ink); font-family: var(--serif); font-style: italic; font-size: 15px; line-height: 1.1; }
 [data-hud-sample] { color: var(--accent); }
 
-.paths-cards { display: grid; align-content: end; gap: 18px; min-height: 0; }
-.mcards { list-style: none; padding: 0; display: grid; }
-.mcard {
-  grid-area: 1 / 1;
-  display: grid;
-  gap: 10px;
-  align-content: end;
-  transition: opacity 0.55s var(--ease), transform 0.55s var(--ease), filter 0.55s var(--ease);
+/* Milestones: cards that pop out of the life line and land here, in rows,
+   each tied to its year by a leader. Crowded rows fan out like a deck. */
+.paths-timeline { display: grid; gap: 4px; min-width: 0; }
+.ms-caption {
+  font: 400 12px/1.5 var(--mono);
+  color: var(--ink-2);
+  min-height: 1.5em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
-.mcard[data-state='after'] { opacity: 0; transform: translateY(18px); filter: blur(4px); pointer-events: none; }
-.mcard[data-state='before'] { opacity: 0; transform: translateY(-18px); filter: blur(4px); pointer-events: none; }
-.mcard-when { font: 500 12px/1 var(--mono); color: var(--accent); letter-spacing: 0.04em; }
-.mcard-title { font: 400 clamp(26px, 2.4vw, 38px) / 1.05 var(--serif); letter-spacing: -0.01em; text-wrap: balance; }
-.mcard-where { font: 500 14px/1.4 var(--sans); color: var(--ink); }
-.mcard-note { color: var(--ink-2); font-size: 15px; max-width: 34ch; text-wrap: pretty; }
-.mcard-foot { display: grid; gap: 10px; padding-top: 16px; border-top: 1px solid var(--rule); }
-.mcard-count { font: 400 11px/1 var(--mono); color: var(--ink-3); min-height: 11px; font-variant-numeric: tabular-nums; }
-.mcard-ticks { display: flex; gap: 4px; }
-.mcard-ticks i { flex: 1; height: 3px; border-radius: 2px; background: var(--rule); transition: background 0.4s; }
-.mcard-ticks i.on { background: var(--accent); }
+.ms-band { position: relative; height: 150px; }
+.ms-leaders { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; pointer-events: none; }
+.ms-leaders line { stroke: var(--accent); stroke-width: 1; opacity: 0; transition: opacity 0.25s; }
+.ms-leaders line.on { opacity: 0.4; transition: opacity 0.5s 0.7s; }
+.ms-cards { list-style: none; padding: 0; margin: 0; }
+.ms-card {
+  position: absolute;
+  left: 0;
+  top: 0;
+  height: 64px;
+  display: grid;
+  align-content: start;
+  gap: 5px;
+  padding: 8px 10px;
+  border: 1px solid var(--rule);
+  border-radius: 10px;
+  background: var(--paper);
+  box-shadow: 0 8px 18px -14px rgba(18, 18, 18, 0.5);
+  opacity: 0;
+  transform-origin: 12px 0;
+  will-change: transform, opacity;
+  transition: border-color 0.25s, box-shadow 0.25s;
+}
+.ms-card::before {
+  content: '';
+  position: absolute;
+  left: 10px;
+  top: -3px;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--accent);
+}
+.ms-card.is-active { border-color: var(--accent); box-shadow: 0 10px 22px -14px rgba(255, 77, 31, 0.6); }
+.ms-card:hover { border-color: var(--ink-3); z-index: 99 !important; }
+.ms-when { font: 500 10px/1 var(--mono); color: var(--accent); letter-spacing: 0.04em; white-space: nowrap; }
+.ms-title {
+  font: 400 14px/1.1 var(--serif);
+  color: var(--ink);
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-wrap: balance;
+}
 
-@media (max-width: 860px) {
-  .paths-stage { grid-template-columns: 1fr; grid-template-rows: minmax(0, 1fr) auto; gap: 16px; }
-  .paths-cards { min-height: 190px; }
-  .mcard-note { font-size: 14px; }
+@media (max-width: 640px) {
+  .ms-card { height: 57px; padding: 7px 8px; gap: 4px; }
+  .ms-title { font-size: 12.5px; }
+  .ms-caption { white-space: normal; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; min-height: 3em; font-size: 11px; }
 }
 
 /* Interlude between the Monte Carlo and model chapters. */

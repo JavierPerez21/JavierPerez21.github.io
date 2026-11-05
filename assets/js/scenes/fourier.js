@@ -40,7 +40,9 @@ export function fourierName({ canvas, glyphs, readout, slider, replay, onConverg
 
   let glyphPath = null;
   let curvePath = null, jumpPath = null, curveK = -1, chain = [];
-  let K = FINAL_K, mode = 'rest', t0 = null, phase = 0, restAt = -Infinity;
+  let K = FINAL_K, mode = 'rest', t0 = null, phase = 0, restAt = -Infinity, fill = 1;
+  let detached = false;
+  const restStrength = () => 1 - fill * 0.6;
 
   const view = hidpi(canvas, build);
   if (slider) slider.max = String(LOG_KMAX);
@@ -201,7 +203,8 @@ export function fourierName({ canvas, glyphs, readout, slider, replay, onConverg
     ctx.clearRect(0, 0, w, h);
     if (!glyphPath) return;
 
-    let tracing = false, fill = 0;
+    let tracing = false;
+    fill = 0;
     if (mode === 'play') {
       if (elapsed >= PLAY_END) {
         mode = 'rest';
@@ -237,7 +240,7 @@ export function fourierName({ canvas, glyphs, readout, slider, replay, onConverg
       traceTo(ctx, phase, 0);
       ctx.globalAlpha = 0.2;
       traceTo(ctx, phase, 1);
-      drawEpicycles(ctx, 1);
+      if (!detached) drawEpicycles(ctx, 1);
     } else {
       ctx.lineWidth = 1.1;
       ctx.globalAlpha = 0.85 * (1 - fill * 0.85);
@@ -249,8 +252,10 @@ export function fourierName({ canvas, glyphs, readout, slider, replay, onConverg
         ctx.fillStyle = ink;
         ctx.fill(glyphPath);
       }
-      drawTrail(ctx);
-      drawEpicycles(ctx, 1 - fill * 0.6);
+      if (!detached) {
+        drawTrail(ctx);
+        drawEpicycles(ctx, restStrength());
+      }
     }
     ctx.globalAlpha = 1;
   }
@@ -291,38 +296,53 @@ export function fourierName({ canvas, glyphs, readout, slider, replay, onConverg
     ctx.strokeStyle = ink;
   }
 
-  function drawEpicycles(ctx, strength) {
+  /**
+   * Joints of the epicycle chain in canvas px: centre, one per drawn circle,
+   * then the true tip. Segment i has length radii[i]; circle i is centred on
+   * joint i (the last segment is the residual of the undrawn terms).
+   */
+  function joints() {
     const theta = (2 * Math.PI * phase) / N;
     let x = spec.re[0] / N, y = spec.im[0] / N;
-    const arms = [x, y];
+    const pts = [x, y], radii = [];
+    for (const i of chain) {
+      const a = freqOf(i, N) * theta;
+      const cr = spec.re[i] / N, ci = spec.im[i] / N;
+      radii.push(Math.hypot(cr, ci));
+      x += cr * Math.cos(a) - ci * Math.sin(a);
+      y += cr * Math.sin(a) + ci * Math.cos(a);
+      pts.push(x, y);
+    }
+    const [tx, ty] = tip();
+    radii.push(Math.hypot(tx - x, ty - y));
+    pts.push(tx, ty);
+    return { pts, radii };
+  }
+
+  function drawEpicycles(ctx, strength) {
+    const { pts, radii } = joints();
+    const n = pts.length / 2;
 
     ctx.lineWidth = 1;
     ctx.strokeStyle = ink;
     ctx.beginPath();
-    for (const i of chain) {
-      const a = freqOf(i, N) * theta;
-      const cr = spec.re[i] / N, ci = spec.im[i] / N;
-      const r = Math.hypot(cr, ci);
-      if (r > 0.5) { ctx.moveTo(x + r, y); ctx.arc(x, y, r, 0, Math.PI * 2); }
-      x += cr * Math.cos(a) - ci * Math.sin(a);
-      y += cr * Math.sin(a) + ci * Math.cos(a);
-      arms.push(x, y);
+    for (let j = 0; j < n - 2; j++) {
+      const r = radii[j];
+      if (r > 0.5) { ctx.moveTo(pts[j * 2] + r, pts[j * 2 + 1]); ctx.arc(pts[j * 2], pts[j * 2 + 1], r, 0, Math.PI * 2); }
     }
     ctx.globalAlpha = 0.2 * strength;
     ctx.stroke();
 
-    const [tx, ty] = tip();
     ctx.beginPath();
-    ctx.moveTo(arms[0], arms[1]);
-    for (let i = 2; i < arms.length; i += 2) ctx.lineTo(arms[i], arms[i + 1]);
-    ctx.lineTo(tx, ty);
+    ctx.moveTo(pts[0], pts[1]);
+    for (let j = 1; j < n; j++) ctx.lineTo(pts[j * 2], pts[j * 2 + 1]);
     ctx.globalAlpha = 0.6 * strength;
     ctx.stroke();
 
     ctx.globalAlpha = 1;
     ctx.fillStyle = accent;
     ctx.beginPath();
-    ctx.arc(tx, ty, 3.4, 0, Math.PI * 2);
+    ctx.arc(pts[n * 2 - 2], pts[n * 2 - 1], 3.4, 0, Math.PI * 2);
     ctx.fill();
   }
 
@@ -341,4 +361,17 @@ export function fourierName({ canvas, glyphs, readout, slider, replay, onConverg
     if (t0 === null) t0 = now;
     draw(dt, now - t0);
   });
+
+  return {
+    /** Live epicycle chain in canvas px, or null before the first layout. */
+    chain: () => {
+      if (!glyphPath) return null;
+      partialSum(K); // the hero may never have drawn (e.g. page restored mid-scroll)
+      return joints();
+    },
+    /** How strongly the chain is drawn at rest (it fades as the name fills in). */
+    strength: () => restStrength(),
+    /** While detached the chain belongs to the scroll transition, not the hero. */
+    setDetached: (d) => { detached = d; },
+  };
 }

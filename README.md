@@ -36,7 +36,7 @@ assets/
     main.js             entry point, wires scenes to the DOM
     explore.js          /explore field + lightbox
     lib/                fft.js · rng.js (seeded) · util.js
-    scenes/             fourier.js · paths.js · model.js · sampler.js
+    scenes/             fourier.js · bridge.js (§01→§02 fall) · paths.js · model.js · sampler.js
     ui/                 nav.js · reveal.js · drawer.js · modelcard.js
   data/name-glyphs.json glyph outlines of the name (generated)
   img/                  favicon, og.png, work/ (figures), explore/ (photos)
