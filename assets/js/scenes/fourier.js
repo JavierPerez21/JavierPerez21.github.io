@@ -2,44 +2,49 @@
  * §01 · Analysis: the name as a Fourier series.
  *
  * The outline of every glyph is stitched into one closed curve f(θ) in the
- * complex plane, sampled at N points and transformed with an FFT. We then
- * draw the partial sums S_K(θ) = Σ_{|n|≤K} c_n e^{inθ} for growing K,
- * plus the chain of epicycles whose tip traces f, until the series
- * converges on the name.
+ * complex plane, sampled at N points and transformed with an FFT. On load we
+ * step through K = 0, 10, 100, 1000, 10000: at each stage a chain of
+ * epicycles (one circle per term, largest first) draws the partial sum
+ * S_K(θ) = Σ_{|n|≤K} c_n e^{inθ}, until the series converges on the name.
  */
 import { fft, freqOf } from '../lib/fft.js';
-import { clamp, cssVar, hidpi, invLerp, reducedMotion, smooth, visibleLoop } from '../lib/util.js';
+import { clamp, cssVar, hidpi, invLerp, smooth, visibleLoop } from '../lib/util.js';
 
-const N = 4096;
+const N = 32768;
 const KMAX = N / 2;
 const LOG_KMAX = Math.log2(KMAX);
-const JUMP_PTS = 6; // samples spent "lifting the pen" between contours
-const INTRO = 4.2; // seconds for the series to converge
-const TRACE_PERIOD = 18; // seconds for the pen to travel the whole name
-const CIRCLES = 90; // epicycles actually drawn (the rest are sub-pixel)
-const AUTOPLAY_SEQUENCE = [0, 10, 100, 1000, 10000]; // K values to play on initial load
-const STEP_DURATION = 1.5; // seconds per step in autoplay
+const JUMP_PTS = 24; // samples spent "lifting the pen" between contours
+const STAGES = [
+  { k: 0, dur: 0.8 },
+  { k: 10, dur: 1.8 },
+  { k: 100, dur: 1.8 },
+  { k: 1000, dur: 2 },
+  { k: 10000, dur: 2.2 },
+];
+const PLAY_END = STAGES.reduce((s, x) => s + x.dur, 0);
+const FINAL_K = STAGES[STAGES.length - 1].k;
+const FILL_IN = 0.9; // seconds for the solid name to fade in after the last stage
+const TRACE_PERIOD = 12; // seconds per lap of the pen once at rest
+const CIRCLES = 160; // epicycles drawn; the remaining terms are sub-pixel
+
+const fillFor = (k) => smooth(invLerp(9, 13, Math.log2(k + 1)));
 
 export function fourierName({ canvas, glyphs, readout, slider, replay, onConverged }) {
   const ink = cssVar('--ink') || '#121212';
   const accent = cssVar('--accent') || '#ff4d1f';
-  const still = reducedMotion();
 
   const spec = { re: new Float64Array(N), im: new Float64Array(N) };
   const work = { re: new Float64Array(N), im: new Float64Array(N) };
   const jump = new Uint8Array(N);
-  const order = Array.from({ length: N }, (_, i) => i).sort((a, b) => {
-    const fa = freqOf(a, N), fb = freqOf(b, N);
-    return Math.abs(fa) - Math.abs(fb) || fb - fa;
-  });
   const cumEnergy = new Float64Array(KMAX + 1);
 
   let glyphPath = null;
-  let curvePath = null, jumpPath = null, curveK = -1;
-  let K = 1, mode = still ? 'rest' : 'autoplay', t0 = null, phase = 0, converged = false;
-  let autoplayIndex = 0;
+  let curvePath = null, jumpPath = null, curveK = -1, chain = [];
+  let K = FINAL_K, mode = 'rest', t0 = null, phase = 0, restAt = -Infinity;
 
   const view = hidpi(canvas, build);
+  if (slider) slider.max = String(LOG_KMAX);
+  onConverged?.();
 
   /* ---------- geometry ---------- */
 
@@ -152,11 +157,16 @@ export function fourierName({ canvas, glyphs, readout, slider, replay, onConverg
 
   function partialSum(k) {
     if (k === curveK) return;
+    const kept = [];
     for (let i = 0; i < N; i++) {
       const keep = Math.abs(freqOf(i, N)) <= k;
       work.re[i] = keep ? spec.re[i] : 0;
       work.im[i] = keep ? spec.im[i] : 0;
+      if (keep && i > 0) kept.push(i);
     }
+    const mag = (i) => spec.re[i] ** 2 + spec.im[i] ** 2;
+    chain = kept.sort((a, b) => mag(b) - mag(a)).slice(0, CIRCLES);
+
     fft(work.re, work.im, true);
     curvePath = new Path2D();
     jumpPath = new Path2D();
@@ -178,10 +188,10 @@ export function fourierName({ canvas, glyphs, readout, slider, replay, onConverg
   function setReadout(k) {
     if (!readout || k === shownK) return;
     shownK = k;
-    readout.k.textContent = k >= KMAX ? `${KMAX}` : String(k);
+    readout.k.textContent = String(k);
     readout.terms.textContent = String(Math.min(N, 2 * k + 1));
     readout.err.textContent = relError(k).toFixed(4);
-    if (slider && mode !== 'user') slider.value = String(Math.log2(Math.max(1, k)));
+    if (slider && mode !== 'user') slider.value = String(Math.log2(k + 1));
   }
 
   /* ---------- drawing ---------- */
@@ -191,64 +201,82 @@ export function fourierName({ canvas, glyphs, readout, slider, replay, onConverg
     ctx.clearRect(0, 0, w, h);
     if (!glyphPath) return;
 
-    if (mode === 'autoplay') {
-      const totalDuration = STEP_DURATION * (AUTOPLAY_SEQUENCE.length + 1);
-      if (elapsed < totalDuration) {
-        const step = Math.floor(elapsed / STEP_DURATION);
-        if (step < AUTOPLAY_SEQUENCE.length) {
-          K = AUTOPLAY_SEQUENCE[step];
-        } else {
-          K = KMAX;
-        }
-      } else {
+    let tracing = false, fill = 0;
+    if (mode === 'play') {
+      if (elapsed >= PLAY_END) {
         mode = 'rest';
-        K = KMAX;
+        restAt = elapsed;
+        phase = 0;
+      } else {
+        let t = elapsed, s = 0;
+        while (s < STAGES.length - 1 && t >= STAGES[s].dur) t -= STAGES[s].dur, s++;
+        K = STAGES[s].k;
+        const u = clamp(t / (STAGES[s].dur * 0.85));
+        phase = u * u * (3 - 2 * u) * (N - 1);
+        tracing = true;
       }
-    } else if (mode === 'intro') {
-      const u = clamp(elapsed / INTRO);
-      K = Math.max(1, Math.round(2 ** (LOG_KMAX * (u * u * (3 - 2 * u)))));
-      if (u >= 1) { mode = 'rest'; }
-    } else if (mode === 'rest') {
-      K = KMAX;
     }
-    if (K >= KMAX && !converged) { converged = true; onConverged?.(); }
+    if (mode === 'rest') {
+      K = FINAL_K;
+      fill = smooth(clamp((elapsed - restAt) / FILL_IN)) * fillFor(K);
+    } else if (mode === 'user') {
+      fill = fillFor(K);
+    }
+    if (!tracing) phase = (phase + (dt * N) / TRACE_PERIOD) % N;
 
     partialSum(K);
     setReadout(K);
 
-    const lk = Math.log2(Math.max(1, K)) / LOG_KMAX;
-    const fill = smooth(invLerp(0.86, 1, lk));
-
-    // Partial-sum curve, with pen-up jumps fading as the series converges.
     ctx.lineJoin = 'round';
+    ctx.lineCap = 'round';
     ctx.strokeStyle = ink;
-    ctx.globalAlpha = 0.85 * (1 - fill * 0.85);
-    ctx.lineWidth = 1.1;
-    ctx.stroke(curvePath);
-    ctx.globalAlpha = 0.35 * (1 - lk) ** 1.5;
-    ctx.stroke(jumpPath);
 
-    // Solid name once converged.
-    if (fill > 0) {
-      ctx.globalAlpha = fill;
-      ctx.fillStyle = ink;
-      ctx.fill(glyphPath);
+    if (tracing) {
+      ctx.lineWidth = 1.3;
+      ctx.globalAlpha = 0.9;
+      traceTo(ctx, phase, 0);
+      ctx.globalAlpha = 0.2;
+      traceTo(ctx, phase, 1);
+      drawEpicycles(ctx, 1);
+    } else {
+      ctx.lineWidth = 1.1;
+      ctx.globalAlpha = 0.85 * (1 - fill * 0.85);
+      ctx.stroke(curvePath);
+      ctx.globalAlpha = 0.25 * (1 - fill);
+      ctx.stroke(jumpPath);
+      if (fill > 0) {
+        ctx.globalAlpha = fill;
+        ctx.fillStyle = ink;
+        ctx.fill(glyphPath);
+      }
+      drawTrail(ctx);
+      drawEpicycles(ctx, 1 - fill * 0.6);
     }
-
-    if (still) { ctx.globalAlpha = 1; return; }
-
-    phase = (phase + (dt * N) / TRACE_PERIOD) % N;
-    drawTrail(ctx);
-    drawEpicycles(ctx, fill);
     ctx.globalAlpha = 1;
   }
 
+  /** Stroke S_K from θ = 0 up to sample `upto`; `kind` 0 = ink, 1 = pen-up jumps. */
+  function traceTo(ctx, upto, kind) {
+    const end = Math.min(N - 1, Math.floor(upto));
+    ctx.beginPath();
+    ctx.moveTo(work.re[0], work.im[0]);
+    for (let i = 0; i < end; i++) {
+      if (jump[i] === kind) ctx.lineTo(work.re[i + 1], work.im[i + 1]);
+      else ctx.moveTo(work.re[i + 1], work.im[i + 1]);
+    }
+    ctx.stroke();
+  }
+
+  function tip() {
+    const i0 = Math.floor(phase) % N, i1 = (i0 + 1) % N, f = phase - Math.floor(phase);
+    return [work.re[i0] + (work.re[i1] - work.re[i0]) * f, work.im[i0] + (work.im[i1] - work.im[i0]) * f];
+  }
+
   function drawTrail(ctx) {
-    const L = 420, chunks = 14, step = L / chunks;
+    const L = Math.round(N * 0.1), chunks = 14, step = Math.ceil(L / chunks);
     const head = Math.floor(phase);
     ctx.strokeStyle = accent;
     ctx.lineWidth = 2;
-    ctx.lineCap = 'round';
     for (let c = 0; c < chunks; c++) {
       ctx.globalAlpha = ((c + 1) / chunks) ** 2;
       ctx.beginPath();
@@ -260,50 +288,41 @@ export function fourierName({ canvas, glyphs, readout, slider, replay, onConverg
       }
       ctx.stroke();
     }
+    ctx.strokeStyle = ink;
   }
 
-  function drawEpicycles(ctx, fill) {
-    const terms = Math.min(N, 2 * K + 1);
+  function drawEpicycles(ctx, strength) {
     const theta = (2 * Math.PI * phase) / N;
     let x = spec.re[0] / N, y = spec.im[0] / N;
-    const fade = 1 - fill * 0.55;
-    const circleAlpha = mode === 'autoplay' ? 0.15 : 0.09;
-    const armAlpha = mode === 'autoplay' ? 0.55 : 0.4;
-    const circleWidth = mode === 'autoplay' ? 1.3 : 1;
+    const arms = [x, y];
 
-    ctx.lineWidth = circleWidth;
+    ctx.lineWidth = 1;
     ctx.strokeStyle = ink;
     ctx.beginPath();
-    const arms = [x, y];
-    for (let o = 1; o < terms; o++) {
-      const i = order[o];
-      const f = freqOf(i, N);
-      const a = f * theta;
+    for (const i of chain) {
+      const a = freqOf(i, N) * theta;
       const cr = spec.re[i] / N, ci = spec.im[i] / N;
-      const nx = x + cr * Math.cos(a) - ci * Math.sin(a);
-      const ny = y + cr * Math.sin(a) + ci * Math.cos(a);
-      if (o <= CIRCLES) {
-        const r = Math.hypot(cr, ci);
-        if (r > 0.6) { ctx.moveTo(x + r, y); ctx.arc(x, y, r, 0, Math.PI * 2); }
-        arms.push(nx, ny);
-      }
-      x = nx; y = ny;
+      const r = Math.hypot(cr, ci);
+      if (r > 0.5) { ctx.moveTo(x + r, y); ctx.arc(x, y, r, 0, Math.PI * 2); }
+      x += cr * Math.cos(a) - ci * Math.sin(a);
+      y += cr * Math.sin(a) + ci * Math.cos(a);
+      arms.push(x, y);
     }
-    ctx.globalAlpha = circleAlpha * fade;
+    ctx.globalAlpha = 0.2 * strength;
     ctx.stroke();
 
-    ctx.lineWidth = circleWidth;
+    const [tx, ty] = tip();
     ctx.beginPath();
     ctx.moveTo(arms[0], arms[1]);
     for (let i = 2; i < arms.length; i += 2) ctx.lineTo(arms[i], arms[i + 1]);
-    ctx.lineTo(x, y);
-    ctx.globalAlpha = armAlpha * fade;
+    ctx.lineTo(tx, ty);
+    ctx.globalAlpha = 0.6 * strength;
     ctx.stroke();
 
     ctx.globalAlpha = 1;
     ctx.fillStyle = accent;
     ctx.beginPath();
-    ctx.arc(x, y, 3.2, 0, Math.PI * 2);
+    ctx.arc(tx, ty, 3.4, 0, Math.PI * 2);
     ctx.fill();
   }
 
@@ -311,15 +330,10 @@ export function fourierName({ canvas, glyphs, readout, slider, replay, onConverg
 
   slider?.addEventListener('input', () => {
     mode = 'user';
-    K = Math.max(1, Math.round(2 ** Number(slider.value)));
+    K = Math.min(KMAX - 1, Math.round(2 ** Number(slider.value)) - 1);
   });
   replay?.addEventListener('click', () => {
-    if (still) {
-      mode = 'rest';
-    } else {
-      mode = 'autoplay';
-      autoplayIndex = 0;
-    }
+    mode = 'play';
     t0 = null;
   });
 
