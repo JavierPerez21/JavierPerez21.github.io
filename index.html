@@ -1,174 +1,204 @@
-<!DOCTYPE HTML>
-<!--
-	Phantom by HTML5 UP
-	html5up.net | @ajlkn
-	Free for personal and commercial use under the CCA 3.0 license (html5up.net/license)
--->
-<html>
-	<head>
-		<title>Javier Perez Tobia</title>
-		<meta charset="utf-8" />
-		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
-		<link rel="stylesheet" href="assets/css/main.css" />
-		<noscript><link rel="stylesheet" href="assets/css/noscript.css" /></noscript>
-	</head>
-	<body class="is-preload">
-		<!-- Wrapper -->
-			<div id="wrapper">
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>Javier Perez Tobia · Applied AI & ML engineer</title>
+  <meta name="description" content="Javier Perez Tobia: applied AI and machine-learning engineer in Madrid. Physics & Mathematics (UBC), ML research in adversarial robustness and biomolecular ML, and production AI at QuantumBlack, AI by McKinsey." />
+  <meta name="author" content="Javier Perez Tobia" />
+  <meta name="theme-color" content="#f3f1eb" />
+  <link rel="canonical" href="https://javierperez21.github.io/" />
+  <link rel="icon" href="assets/img/favicon.svg" type="image/svg+xml" />
 
-				<!-- Header -->
-					<header id="header">
-						<div class="inner">
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://javierperez21.github.io/" />
+  <meta property="og:title" content="Javier Perez Tobia · Applied AI & ML engineer" />
+  <meta property="og:description" content="From Fourier series to Monte Carlo to transformers: a personal site that walks the history of AI." />
+  <meta property="og:image" content="https://javierperez21.github.io/assets/img/og.png" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:site" content="@javi_pereztobia" />
 
-							<!-- Logo -->
-								<a href="index.html" class="logo">
-									<span class="symbol"><img src="images/logo.svg" alt="" /></span><span class="title">Javier Perez Tobia</span>
-								</a>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@300..600&family=Geist+Mono:wght@400;500&family=Instrument+Serif:ital@0;1&display=swap" />
+  <link rel="stylesheet" href="assets/css/tokens.css" />
+  <link rel="stylesheet" href="assets/css/base.css" />
+  <link rel="stylesheet" href="assets/css/layout.css" />
+  <link rel="stylesheet" href="assets/css/sections.css" />
+  <link rel="stylesheet" href="assets/css/drawer.css" />
+  <link rel="preload" href="assets/data/name-glyphs.json" as="fetch" crossorigin />
+  <script>document.documentElement.classList.add('js');</script>
+  <script type="module" src="assets/js/main.js"></script>
+</head>
+<body>
+  <a class="skip" href="#about">Skip to content</a>
 
-							<!-- Nav -->
-								<nav>
-									<ul>
-										<li><a href="#menu">Menu</a></li>
-									</ul>
-								</nav>
+  <header class="topbar">
+    <a class="brand" href="#series" aria-label="Javier Perez Tobia, back to top">
+      <svg class="brand-mark" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9" /><circle cx="18.4" cy="5.6" r="3.2" /><circle cx="20.6" cy="3.6" r="1.4" class="fill" /></svg>
+      <span>Javier Perez Tobia</span>
+    </a>
+    <nav class="chapters" aria-label="Chapters">
+      <a data-nav href="#series"><span>01</span>Series</a>
+      <a data-nav href="#paths"><span>02</span>Paths</a>
+      <a data-nav href="#model"><span>03</span>Layers</a>
+      <a data-nav href="#card"><span>04</span>Card</a>
+      <a data-nav href="#next"><span>05</span>Next</a>
+    </nav>
+    <p class="topbar-meta">
+      <span class="live" aria-hidden="true"></span>
+      <span class="hide-sm">Madrid</span>
+      <time data-clock>--:--</time>
+      <a href="explore/" class="topbar-explore">Explore <span aria-hidden="true">↗</span></a>
+    </p>
+  </header>
 
-						</div>
-					</header>
+  <div class="rail" aria-hidden="true">
+    <span class="rail-track"><i data-progress></i></span>
+    <ol>
+      <li>1807</li>
+      <li>1946</li>
+      <li>2017</li>
+      <li>now</li>
+    </ol>
+  </div>
 
-				<!-- Menu -->
-					<nav id="menu">
-						<h2>Menu</h2>
-						<ul>
-							<li><a href="index.html">Home</a></li>
-							<li><a href="machinelearning.html">Machine Learning</a></li>
-							<li><a href="quantumcomputing.html">Quantum Computing</a></li>
-							<li><a href="otherprojects.html">Other projects</a></li>
-							<li><a href="credentials.html">Credentials</a></li>
-							<li><a href="experience.html">Experience</a></li>
-						</ul>
-					</nav>
+  <main>
+    <!-- 01 · Analysis -->
+    <section class="hero" id="series" data-chapter aria-labelledby="name">
+      <canvas class="hero-canvas" aria-hidden="true"></canvas>
+      <p class="eyebrow hero-eyebrow"><span data-scramble>[ 01 · Analysis · Fourier, 1807 ]</span></p>
+      <h1 class="hero-name" id="name">Javier Perez Tobia</h1>
+      <div class="hero-foot">
+        <p class="hero-intro" data-reveal>
+          Applied AI &amp; machine-learning engineer. Physicist and mathematician by training. These days I build models that survive contact with the real world at <em>QuantumBlack, AI by McKinsey</em>.
+        </p>
+        <div class="readout" data-reveal>
+          <p class="formula" aria-label="S sub K of theta equals the sum over n from minus K to K of c sub n times e to the i n theta">
+            S<sub>K</sub>(θ) = <span class="big">Σ</span><sub>|n|≤K</sub> c<sub>n</sub> e<sup>inθ</sup>
+          </p>
+          <dl class="readout-grid">
+            <dt>K</dt><dd data-k>1</dd>
+            <dt>terms</dt><dd data-terms>3</dd>
+            <dt>‖f − S<sub>K</sub>‖ / ‖f‖</dt><dd data-err>1.0000</dd>
+          </dl>
+          <div class="readout-controls">
+            <label class="range">
+              <span class="label">harmonics</span>
+              <input type="range" min="0" max="11" step="0.01" value="0" aria-label="Number of Fourier harmonics" data-harmonics />
+            </label>
+            <button class="btn btn--ghost btn--sm" type="button" data-replay>↺ replay</button>
+          </div>
+        </div>
+      </div>
+      <a class="scroll-cue" href="#about"><span>scroll to sample</span><i aria-hidden="true"></i></a>
+    </section>
 
-				<!-- Main -->
-					<div id="main">
-						<div class="inner">
-							<header>
-								<h1>Welcome!</h1>
-								<p>I am a fourth year Physics and Mathematics student at the University of British Columbia.
-								My main research interests are machine learning, with a focus on robustness and explainability, and quantum computing.
-								Some other fields I am very interested in and actively trying to learn more about are finance, bioengineering and sustainability.</p>
-							</header>
-							<section class="tiles">
-								<article class="style1">
-									<span class="image">
-										<img src="images/ml.jpg" alt="" />
-									</span>
-									<a href="machinelearning.html">
-										<h2>Machine Learning</h2>
-										<div class="content">
-											<p>-</p>
-										</div>
-									</a>
-								</article>
-								<article class="style2">
-									<span class="image">
-										<img src="images/ibmqc.png" alt="" />
-									</span>
-									<a href="quantumcomputing.html">
-										<h2>Quantum Computing</h2>
-										<div class="content">
-											<p>-</p>
-										</div>
-									</a>
-								</article>
-								<article class="style3">
-									<span class="image">
-										<img src="images/project.png" alt="" />
-									</span>
-									<a href="otherprojects.html">
-										<h2>Other projects</h2>
-										<div class="content">
-											<p>-</p>
-										</div>
-									</a>
-								</article>
-								<article class="style2">
-									<span class="image">
-										<img src="images/workexperience.jpg" alt="" />
-									</span>
-									<a href="experience.html">
-										<h2>Work Experience</h2>
-										<div class="content">
-											<p>-</p>
-										</div>
-									</a>
-								</article>
-								<article class="style4">
-									<span class="image">
-										<img src="images/gradhat.jpg" alt="" />
-									</span>
-									<a href="credentials.html">
-										<h2>Credentials</h2>
-										<div class="content">
-											<p>-</p>
-										</div>
-									</a>
-								</article>
-								</article>
-								<article class="style6">
-									<span class="image">
-										<img src="images/exploring.jpeg" alt="" />
-									</span>
-									<a href="exploring.html">
-										<h2>Exploring</h2>
-										<div class="content">
-											<p>-</p>
-										</div>
-									</a>
-								</article>
-								<article class="style5">
-									<span class="image">
-										<img src="images/bugaboo2.jpeg" alt="" />
-									</span>
-									<a href="gallery.html">
-										<h2>Gallery</h2>
-										<div class="content">
-											<p>-</p>
-										</div>
-									</a>
-								</article>
+    <!-- About -->
+    <section class="about" id="about" aria-label="About">
+      <p class="eyebrow" data-scramble>[ about ]</p>
+      <p class="statement" data-reveal>
+        I like problems where you have to understand what is happening <em>underneath</em> the data instead of reaching for a recipe. Then I make the solution survive contact with the system around it.
+      </p>
+      <div class="about-cols">
+        <div data-reveal>
+          <p class="label">Now</p>
+          <p>Associate, Data Science at <strong>QuantumBlack, AI by McKinsey</strong> in Madrid. ML forecasting, optimisation and LLM systems for energy, banking and telecom.</p>
+        </div>
+        <div data-reveal>
+          <p class="label">Before</p>
+          <p>Machine Learning Researcher at <strong>UBC</strong>: adversarial robustness, biomolecular ML, time series and adaptive control. Three publications.</p>
+        </div>
+        <div data-reveal>
+          <p class="label">Trained in</p>
+          <p><strong>B.Sc. Physics &amp; Mathematics</strong>, University of British Columbia, with a 96.2% cumulative average.</p>
+        </div>
+      </div>
+    </section>
 
+    <!-- 02 · Probability -->
+    <section class="paths" id="paths" data-chapter aria-labelledby="paths-title">
+      <div class="paths-sticky">
+        <header class="paths-head">
+          <p class="eyebrow"><span data-scramble>[ 02 · Probability · Monte Carlo, 1946 ]</span></p>
+          <h2 class="title" id="paths-title">Which of these lives am I&nbsp;in?</h2>
+        </header>
+        <div class="paths-stage">
+          <div class="paths-plot">
+            <canvas aria-hidden="true"></canvas>
+            <p class="paths-hud">
+              <span>dX<sub>t</sub> = μ dt + σ dW<sub>t</sub></span>
+              <span data-hud-sample></span>
+              <span data-hud-t></span>
+            </p>
+          </div>
+          <div class="paths-cards"></div>
+        </div>
+      </div>
+    </section>
 
-							</section>
-						</div>
-					</div>
+    <div class="descent" aria-hidden="true">
+      <p><span data-scramble>tokenising your attention…</span></p>
+    </div>
 
-				<!-- Footer -->
-					<footer id="footer">
-						<div class="inner">
+    <!-- 03 · Representation -->
+    <section class="model" id="model" data-chapter aria-labelledby="model-title">
+      <div class="model-sticky">
+        <canvas aria-hidden="true"></canvas>
+        <div class="model-intro">
+          <p class="eyebrow">[ 03 · Representation · Attention, 2017 ]</p>
+          <h2 class="title" id="model-title">Now, step inside the&nbsp;model.</h2>
+          <p class="note">4 layers · 1 forward pass. Scroll to propagate; click any lit neuron to read it.</p>
+        </div>
+        <div class="model-labels" role="group" aria-label="Neurons in the current layer"></div>
+        <div class="model-hud" aria-live="polite">
+          <p class="model-op"></p>
+          <h3 class="model-title"></h3>
+          <p class="model-span"></p>
+          <p class="model-blurb"></p>
+        </div>
+        <ol class="model-rail" aria-hidden="true"></ol>
+        <p class="model-outro" aria-hidden="true">→ projecting onto the vocabulary</p>
+      </div>
+    </section>
 
-							<section>
-								<h2>Get in touch</h2>
-								<ul class="icons">
-									<li><a href="https://twitter.com/javi_pereztobia" class="icon brands style2 fa-twitter"><span class="label">Twitter</span></a></li>
-									<li><a href="https://github.com/JavierPerez21" class="icon brands style2 fa-github"><span class="label">GitHub</span></a></li>
-									<li><a href="https://www.linkedin.com/in/javipt21/" class="icon brands style2 fa-linkedin"><span class="label">LinkedIn</span></a></li>
-									<li><a href="mailto:javierpereztobia@gmail.com" class="icon solid style2 fa-envelope"><span class="label">Email</span></a></li>
-								</ul>
-							</section>
-							<ul class="copyright">
-								<li>&copy; Untitled. All rights reserved</li><li>Design: <a href="http://html5up.net">HTML5 UP</a></li>
-							</ul>
-						</div>
-					</footer>
+    <!-- 04 · Model card -->
+    <section class="card" id="card" data-chapter aria-labelledby="card-title">
+      <p class="eyebrow" data-scramble>[ 04 · Model card ]</p>
+      <h2 class="title" id="card-title" data-reveal>The documentation.</h2>
+      <div class="mc" data-modelcard></div>
+    </section>
 
-			</div>
+    <!-- 05 · Output -->
+    <section class="next" id="next" data-chapter aria-labelledby="next-title">
+      <p class="eyebrow" data-scramble>[ 05 · Output · next token ]</p>
+      <h2 class="title title--xl" id="next-title" data-reveal>Let’s talk.</h2>
+      <div class="sampler" data-sampler>
+        <noscript>
+          <ul class="links-plain">
+            <li><a href="mailto:javierpereztobia@gmail.com">javierpereztobia@gmail.com</a></li>
+            <li><a href="https://www.linkedin.com/in/javipt21/">LinkedIn</a></li>
+            <li><a href="https://github.com/JavierPerez21">GitHub</a></li>
+            <li><a href="https://twitter.com/javi_pereztobia">X / Twitter</a></li>
+          </ul>
+        </noscript>
+      </div>
+    </section>
+  </main>
 
-		<!-- Scripts -->
-			<script src="assets/js/jquery.min.js"></script>
-			<script src="assets/js/browser.min.js"></script>
-			<script src="assets/js/breakpoints.min.js"></script>
-			<script src="assets/js/util.js"></script>
-			<script src="assets/js/main.js"></script>
+  <footer class="footer">
+    <p>© 2026 Javier Perez Tobia · Madrid</p>
+    <p>Hand-built with vanilla JS, a few FFTs and a lot of Brownian motion.</p>
+    <p><a href="llms.txt">Are you an AI agent? Read llms.txt</a></p>
+    <p>Last updated Nov 2026</p>
+  </footer>
 
-	</body>
+  <aside class="drawer" id="drawer" role="dialog" aria-modal="true" aria-labelledby="drawer-title" aria-hidden="true">
+    <div class="drawer-scrim" data-close></div>
+    <div class="drawer-panel" tabindex="-1">
+      <button class="drawer-close" type="button" data-close aria-label="Close panel"><span>esc</span> ✕</button>
+      <div class="drawer-body"></div>
+    </div>
+  </aside>
+</body>
 </html>

@@ -1,0 +1,48 @@
+# Javier Perez Tobia
+
+> Applied AI / machine-learning engineer and researcher based in Madrid, Spain. B.Sc. in Physics & Mathematics from the University of British Columbia (96.2% cumulative average). Currently Associate, Data Science at QuantumBlack, AI by McKinsey.
+
+This file is a plain-text summary of https://javierperez21.github.io for language models and other automated readers.
+
+## Experience
+
+- QuantumBlack, AI by McKinsey, Madrid (Sep 2023 to present). Data Scientist, then Senior Data Scientist (Nov 2024), then Associate, Data Science (Nov 2025). Owns end-to-end AI and analytics workstreams and leads data-science teams of 5+ across energy, banking and telecom.
+  - AI transformation of energy trading: ML forecasting and Gurobi-based multi-asset optimisation, end-to-end orchestration and deployment, capability building across software teams.
+  - Digital transformation of refining operations: digital twins, real-time ML models for crude-property prediction, optimisation modules.
+  - ML-driven retail-bank deposit pricing: price-sensitivity and portfolio-allocation models, with proofs of concept showing P&L impact in under four weeks, then wave-based deployment.
+  - Customer-value optimisation for Latin American and Iberian telecoms: ML targeting, LLM solutions for call-transcription analytics and knowledge retrieval, data-lake redesign, a company-wide optimisation engine.
+- McKinsey & Company, Data Science Intern, Madrid (Jun to Jul 2022): optimisation models for futures pricing and asset allocation.
+- University of British Columbia, DAIS & IDSL labs, Machine Learning Researcher (May 2021 to Jul 2022): adversarial robustness, adaptive model predictive control, biomolecular ML, time series.
+- UBC, Teaching Assistant, MATH 116 Calculus I (2020 to 2021).
+- Omdena x UN World Food Programme, Data-labelling Team Manager (2019): crop classification from satellite imagery in Nepal.
+
+## Publications
+
+- AGS: Attribution Guided Sharpening as a Defense Against Adversarial Attacks. IDA 2022 (Springer). https://link.springer.com/chapter/10.1007/978-3-031-01333-1_18
+- Machine Learning Directed Aptamer Search from Conserved Primary Sequence and Secondary Structure. ACS Synthetic Biology, 2023. Preprint: https://chemrxiv.org/engage/chemrxiv/article-details/630a2dafd858fb0f695e65f2
+- Is Timing Critical to Trace Reconstruction? IEEE SMC 2021. https://ieeexplore.ieee.org/abstract/document/9658712
+
+## Skills
+
+- ML & research: Python, PyTorch, JAX, Qiskit, scikit-learn, NumPy, pandas.
+- Generative AI & LLM systems: agentic workflows, RAG, embeddings and vector retrieval, tool calling, LLM evaluation.
+- Optimisation & control: Gurobi, MATLAB, C++, stochastic and multi-asset optimisation, MPC, digital twins.
+- Engineering & production: SQL, Linux, Git, AWS, Azure, MLOps, data pipelines.
+
+## Honours
+
+- QHack 2022 quantum computing hackathon: #29 of 800+, all 25 challenges solved.
+- CAN-SBX 2018 winner (Canadian Stratospheric Balloon Experiment).
+- Graduating Student Award in Physics & Mathematics; International Student Faculty Award; International Major Entrance Scholarship (UBC).
+- IBM Certified Associate Developer, Quantum Computation using Qiskit.
+
+## Languages
+
+Spanish (native), English (C2), French (B2).
+
+## Contact
+
+- Email: javierpereztobia@gmail.com
+- LinkedIn: https://www.linkedin.com/in/javipt21/
+- GitHub: https://github.com/JavierPerez21
+- X: https://twitter.com/javi_pereztobia
