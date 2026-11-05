@@ -119,7 +119,7 @@
 /* =============================================================== */
 /* 02 · Monte Carlo paths                                           */
 /* =============================================================== */
-.paths { position: relative; height: 520vh; }
+.paths { position: relative; height: 150vh; } /* plays itself; a short pinned dwell */
 .paths-sticky {
   position: sticky;
   top: 0;
@@ -133,7 +133,7 @@
   margin: 0 auto;
 }
 .paths-head { display: grid; gap: 14px; }
-.paths-head .title { font-size: clamp(30px, 3.8vw, 58px); }
+.paths-head .title { font-size: clamp(28px, 3.2vw, 50px); }
 
 .paths-stage {
   display: grid;
@@ -157,6 +157,8 @@
 }
 .paths-hud span:first-child { color: var(--ink); font-family: var(--serif); font-style: italic; font-size: 15px; line-height: 1.1; }
 [data-hud-sample] { color: var(--accent); }
+.paths-hud { align-items: center; }
+.paths-replay { pointer-events: auto; }
 
 /* Milestones: cards that pop out of the life line and land here, in rows,
    each tied to its year by a leader. Crowded rows fan out like a deck. */
@@ -178,24 +180,23 @@
   position: absolute;
   left: 0;
   top: 0;
-  height: 64px;
   display: grid;
   align-content: start;
-  gap: 5px;
-  padding: 8px 10px;
+  gap: 6px;
+  padding: 11px 13px 12px;
   border: 1px solid var(--rule);
   border-radius: 10px;
   background: var(--paper);
   box-shadow: 0 8px 18px -14px rgba(18, 18, 18, 0.5);
   opacity: 0;
-  transform-origin: 12px 0;
+  transform-origin: 15px 0;
   will-change: transform, opacity;
   transition: border-color 0.25s, box-shadow 0.25s;
 }
 .ms-card::before {
   content: '';
   position: absolute;
-  left: 10px;
+  left: 13px;
   top: -3px;
   width: 5px;
   height: 5px;
@@ -204,9 +205,29 @@
 }
 .ms-card.is-active { border-color: var(--accent); box-shadow: 0 10px 22px -14px rgba(255, 77, 31, 0.6); }
 .ms-card:hover { border-color: var(--ink-3); z-index: 99 !important; }
-.ms-when { font: 500 10px/1 var(--mono); color: var(--accent); letter-spacing: 0.04em; white-space: nowrap; }
+.ms-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; min-height: 18px; }
+.ms-when { font: 500 11px/1 var(--mono); color: var(--accent); letter-spacing: 0.04em; white-space: nowrap; }
+.ms-org {
+  display: inline-grid;
+  place-items: center;
+  height: 18px;
+  padding: 0 6px;
+  border-radius: 5px;
+  background: var(--org, var(--ink));
+  color: #fff;
+  font: 600 9.5px/1 var(--sans);
+  letter-spacing: 0.06em;
+}
+.ms-logo { height: 16px; width: auto; max-width: 72px; object-fit: contain; }
+.ms-where {
+  font: 400 11.5px/1.3 var(--sans);
+  color: var(--ink-3);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
 .ms-title {
-  font: 400 14px/1.1 var(--serif);
+  font: 450 13.5px/1.32 var(--sans);
   color: var(--ink);
   display: -webkit-box;
   -webkit-line-clamp: 2;
@@ -216,8 +237,10 @@
 }
 
 @media (max-width: 640px) {
-  .ms-card { height: 57px; padding: 7px 8px; gap: 4px; }
-  .ms-title { font-size: 12.5px; }
+  .ms-card { padding: 8px 9px 9px; gap: 4px; }
+  .ms-title { font-size: 12px; line-height: 1.28; }
+  .ms-where { font-size: 10.5px; }
+  .ms-org { height: 16px; font-size: 8.5px; padding: 0 5px; }
   .ms-caption { white-space: normal; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; min-height: 3em; font-size: 11px; }
 }
 

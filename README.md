@@ -7,7 +7,7 @@ The page walks through the history of AI in five chapters, each one an interacti
 | § | Chapter | Era | What happens |
 |---|---------|-----|--------------|
 | 01 | **Series** | Fourier, 1807 | The outline of my name is one closed curve, transformed with an FFT. Partial sums *S<sub>K</sub>* converge on the name while a chain of epicycles traces it. |
-| 02 | **Paths** | Monte Carlo, 1946 | 2,048 simulated Brownian lives. Mine is a Brownian bridge pinned through real milestones; scrolling runs the clock and fans out into the future. |
+| 02 | **Paths** | Monte Carlo, 1946 | The Fourier pen random-walks down to t₀ and 2,048 Brownian lives spawn from it. Mine, a Brownian bridge pinned through real milestones, then plays itself, dropping each milestone into a timeline before fanning out into the future. |
 | 03 | **Layers** | Attention, 2017 | A fly-through of a small transformer. Named neurons are projects and papers; click one to open its details. |
 | 04 | **Card** | | The CV as a model card. |
 | 05 | **Next** | | Contact links as a next-token softmax, with a temperature dial. |

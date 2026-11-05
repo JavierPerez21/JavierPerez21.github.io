@@ -9,7 +9,7 @@
  * timeline under the plot. Past "now" the path fans out into the future.
  */
 import { rng } from '../lib/rng.js';
-import { clamp, cssVar, el, hidpi, invLerp, isCoarse, lerp, scrollProgress, smooth, visibleLoop } from '../lib/util.js';
+import { clamp, cssVar, el, hidpi, invLerp, isCoarse, lerp, smooth, visibleLoop } from '../lib/util.js';
 
 const T0 = 2015.75;
 const T1 = 2031.5;
@@ -17,12 +17,15 @@ const DT = 1 / 12;
 const MU = 0.5;
 const SIGMA = 1.0;
 const ME = 1729; // the path label (Hardy–Ramanujan, naturally)
-const GEN_TAU = 0.34; // path k appears at GEN_TAU·ln(k + 2) s: one by one, then a flood
-const TRACE0 = 0.6; // seconds the first path takes to draw itself; later ones are quicker
-const LIFE_RATE = 3; // how fast the life line chases the scroll position (1/s)
+const GEN_TAU = 0.26; // path k appears at GEN_TAU·ln(k + 2) s: one by one, then a flood
+const TRACE0 = 0.45; // seconds the first path takes to draw itself; later ones are quicker
+const LIFE_SPEED = 2; // years of my path drawn per second
+const FUTURE_SPEED = 3.2; // years per second once past "now"
+const MS_HOLD = 0.3; // seconds the line pauses on each milestone
+const NOW_HOLD = 0.8; // ...and on "now"
 const SVG = 'http://www.w3.org/2000/svg';
 
-export function lifePaths({ section, canvas, timelineRoot, hud, milestones, now }) {
+export function lifePaths({ section, canvas, timelineRoot, hud, replayBtn, milestones, orgs = {}, now }) {
   const ink = cssVar('--ink') || '#121212';
   const accent = cssVar('--accent') || '#ff4d1f';
   const paper = cssVar('--paper') || '#f3f1eb';
@@ -86,6 +89,13 @@ export function lifePaths({ section, canvas, timelineRoot, hud, milestones, now 
   const highlight = (k) => k < 6 || k % Math.floor(nPaths / 24) === 0;
 
   /* ---------- timeline of milestones ---------- */
+  /** Logo of the organisation behind a milestone, or a small monogram badge. */
+  const orgBadge = (o) => {
+    if (!o) return null;
+    if (o.logo) return el('img.ms-logo', { src: o.logo, alt: o.name, title: o.name });
+    return el('span.ms-org', { title: o.name, style: { '--org': o.color } }, o.mark);
+  };
+
   const INTRO = `${nPaths.toLocaleString('en')} trajectories, simulated from the same starting point. One of them is mine.`;
   const OUTRO = 'The probability of this exact path was zero. And yet, here we are; the rest is still being sampled.';
   const caption = el('p.ms-caption', {}, INTRO);
@@ -95,8 +105,9 @@ export function lifePaths({ section, canvas, timelineRoot, hud, milestones, now 
   const lines = milestones.map(() => leaders.appendChild(document.createElementNS(SVG, 'line')));
   const cards = milestones.map((m, k) =>
     el('li.ms-card', { style: { zIndex: k + 1 } },
-      el('span.ms-when', {}, m.when),
-      el('span.ms-title', {}, m.title)));
+      el('span.ms-head', {}, el('span.ms-when', {}, m.when), orgBadge(orgs[m.org])),
+      el('span.ms-title', {}, m.title),
+      m.where ? el('span.ms-where', {}, m.where) : null));
   const band = el('div.ms-band', {}, leaders, el('ol.ms-cards', { 'aria-label': 'Milestones' }, cards));
   timelineRoot.append(caption, band);
 
@@ -117,14 +128,18 @@ export function lifePaths({ section, canvas, timelineRoot, hud, milestones, now 
     const W = band.clientWidth;
     if (!W || !box) return;
     const narrow = W < 640;
-    const rows = narrow ? 3 : W > 1300 ? 2 : 3;
-    const cw = narrow ? 118 : 162;
-    const ch = cards[0].offsetHeight || 58;
-    const top = 16, gap = 8;
+    const rows = narrow || window.innerHeight >= 760 ? 3 : 2; // very short screens: fan more, keep the plot tall
+    const gap = narrow ? 8 : 12;
+    const perRow = Math.ceil(milestones.length / rows);
+    const cw = narrow ? 140 : clamp((W - gap * (perRow - 1)) / (perRow + 0.4), 180, 250);
+    cards.forEach((c) => { c.style.width = `${cw}px`; c.style.height = ''; });
+    const ch = Math.max(...cards.map((c) => c.offsetHeight)) || 90;
+    cards.forEach((c) => { c.style.height = `${ch}px`; });
+    const top = 14;
     band.style.height = `${top + rows * (ch + gap)}px`;
     for (let r = 0; r < rows; r++) {
       const ks = milestones.map((_, k) => k).filter((k) => k % rows === r);
-      const want = ks.map((k) => clamp(X(milestones[k].t) - 12, 0, W - cw));
+      const want = ks.map((k) => clamp(X(milestones[k].t) - 15, 0, W - cw));
       let step = cw + gap;
       const span = W - cw - want[0];
       if (ks.length > 1 && (ks.length - 1) * step > span) step = Math.max(24, span / (ks.length - 1));
@@ -136,7 +151,6 @@ export function lifePaths({ section, canvas, timelineRoot, hud, milestones, now 
       });
     }
     cards.forEach((c, k) => {
-      c.style.width = `${cw}px`;
       if (!flights[k]) {
         c.style.transform = shown[k] ? slotT(k) : dotT(k, 0.15);
         c.style.opacity = shown[k] ? '1' : '0';
@@ -144,7 +158,7 @@ export function lifePaths({ section, canvas, timelineRoot, hud, milestones, now 
       const L = lines[k];
       L.setAttribute('x1', X(milestones[k].t));
       L.setAttribute('y1', 0);
-      L.setAttribute('x2', slots[k].x + 12);
+      L.setAttribute('x2', slots[k].x + 15);
       L.setAttribute('y2', slots[k].y);
     });
   }
@@ -153,7 +167,7 @@ export function lifePaths({ section, canvas, timelineRoot, hud, milestones, now 
   function dotT(k, scale, lift = 0) {
     const pr = canvas.getBoundingClientRect(), br = band.getBoundingClientRect();
     const m = milestones[k];
-    const x = X(m.t) + pr.left - br.left - 12;
+    const x = X(m.t) + pr.left - br.left - 15;
     const y = Y(me[iOf(m.t)]) + pr.top - br.top - lift;
     return `translate(${x}px, ${y}px) scale(${scale})`;
   }
@@ -172,7 +186,7 @@ export function lifePaths({ section, canvas, timelineRoot, hud, milestones, now 
       ]
       : [{ transform: from === 'none' ? slotT(k) : from, opacity: fromO }, { transform: dotT(k, 0.15), opacity: 0 }];
     const anim = c.animate(frames, {
-      duration: show ? 1000 : 480,
+      duration: show ? 760 : 420,
       easing: show ? 'cubic-bezier(.3, .7, .15, 1)' : 'cubic-bezier(.5, 0, .75, 0)',
       fill: 'forwards',
     });
@@ -264,6 +278,30 @@ export function lifePaths({ section, canvas, timelineRoot, hud, milestones, now 
   // Generation starts when cued: by the Fourier pen landing on t₀, or by
   // scroll position when nothing external has taken control.
   let cursor = T0, external = false, cued = false, genStart = null, readyAt = null;
+  let hold = 0, nextMs = 0;
+
+  /** The life line plays itself: steady through the years, a beat on each
+   *  milestone (so its card can pop), a longer one at "now", then the future. */
+  function advanceLife(dt) {
+    if (hold > 0) { hold -= dt; return; }
+    const v = cursor < now ? LIFE_SPEED : FUTURE_SPEED;
+    let next = cursor + v * dt;
+    if (nextMs < milestones.length && next >= milestones[nextMs].t) {
+      next = milestones[nextMs].t;
+      hold = milestones[nextMs].t >= now ? NOW_HOLD : MS_HOLD;
+      nextMs++;
+    }
+    cursor = Math.min(T1, next);
+  }
+
+  function replay() {
+    baked = 0;
+    cloudCtx?.clearRect(0, 0, view.w, view.h);
+    genStart = performance.now() / 1000;
+    readyAt = null;
+    cursor = T0; hold = 0; nextMs = 0;
+  }
+  replayBtn?.addEventListener('click', () => { cued = true; replay(); });
 
   function frame(time, dt) {
     const { ctx, w, h } = view;
@@ -276,12 +314,9 @@ export function lifePaths({ section, canvas, timelineRoot, hud, milestones, now 
     while (baked < count && gt >= appearAt(baked) + traceFor(baked)) bake(baked++);
     const ready = baked >= nPaths;
     if (ready && readyAt === null) readyAt = time;
-    const settled = ready ? smooth(clamp((time - readyAt) / 0.9)) : 0;
+    const settled = ready ? smooth(clamp((time - readyAt) / 0.5)) : 0;
 
-    const p = scrollProgress(section);
-    const target = !ready || p < 0.08 ? T0 : p < 0.86 ? lerp(T0, now, invLerp(0.08, 0.86, p)) : lerp(now, T1, invLerp(0.86, 0.97, p));
-    cursor += (target - cursor) * (1 - Math.exp(-dt * LIFE_RATE));
-    if (Math.abs(target - cursor) < 1e-4) cursor = target;
+    if (ready) advanceLife(time - readyAt > 0.5 ? dt : 0);
 
     ctx.clearRect(0, 0, w, h);
     const xc = X(cursor), xn = X(now);

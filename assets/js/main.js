@@ -31,7 +31,9 @@ const paths = safely('paths', () => {
     canvas: $('canvas', s),
     timelineRoot: $('.paths-timeline', s),
     hud: { sample: $('[data-hud-sample]', s), t: $('[data-hud-t]', s) },
+    replayBtn: $('[data-paths-replay]', s),
     milestones: content.milestones,
+    orgs: content.orgs,
     now: content.NOW,
   });
 });
