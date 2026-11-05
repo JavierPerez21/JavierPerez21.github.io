@@ -17,6 +17,8 @@ const JUMP_PTS = 6; // samples spent "lifting the pen" between contours
 const INTRO = 4.2; // seconds for the series to converge
 const TRACE_PERIOD = 18; // seconds for the pen to travel the whole name
 const CIRCLES = 90; // epicycles actually drawn (the rest are sub-pixel)
+const AUTOPLAY_SEQUENCE = [0, 10, 100, 1000, 10000]; // K values to play on initial load
+const STEP_DURATION = 1.5; // seconds per step in autoplay
 
 export function fourierName({ canvas, glyphs, readout, slider, replay, onConverged }) {
   const ink = cssVar('--ink') || '#121212';
@@ -34,7 +36,8 @@ export function fourierName({ canvas, glyphs, readout, slider, replay, onConverg
 
   let glyphPath = null;
   let curvePath = null, jumpPath = null, curveK = -1;
-  let K = 1, mode = still ? 'rest' : 'intro', t0 = null, phase = 0, converged = false;
+  let K = 1, mode = still ? 'rest' : 'autoplay', t0 = null, phase = 0, converged = false;
+  let autoplayIndex = 0;
 
   const view = hidpi(canvas, build);
 
@@ -188,7 +191,20 @@ export function fourierName({ canvas, glyphs, readout, slider, replay, onConverg
     ctx.clearRect(0, 0, w, h);
     if (!glyphPath) return;
 
-    if (mode === 'intro') {
+    if (mode === 'autoplay') {
+      const totalDuration = STEP_DURATION * (AUTOPLAY_SEQUENCE.length + 1);
+      if (elapsed < totalDuration) {
+        const step = Math.floor(elapsed / STEP_DURATION);
+        if (step < AUTOPLAY_SEQUENCE.length) {
+          K = AUTOPLAY_SEQUENCE[step];
+        } else {
+          K = KMAX;
+        }
+      } else {
+        mode = 'rest';
+        K = KMAX;
+      }
+    } else if (mode === 'intro') {
       const u = clamp(elapsed / INTRO);
       K = Math.max(1, Math.round(2 ** (LOG_KMAX * (u * u * (3 - 2 * u)))));
       if (u >= 1) { mode = 'rest'; }
@@ -251,8 +267,11 @@ export function fourierName({ canvas, glyphs, readout, slider, replay, onConverg
     const theta = (2 * Math.PI * phase) / N;
     let x = spec.re[0] / N, y = spec.im[0] / N;
     const fade = 1 - fill * 0.55;
+    const circleAlpha = mode === 'autoplay' ? 0.15 : 0.09;
+    const armAlpha = mode === 'autoplay' ? 0.55 : 0.4;
+    const circleWidth = mode === 'autoplay' ? 1.3 : 1;
 
-    ctx.lineWidth = 1;
+    ctx.lineWidth = circleWidth;
     ctx.strokeStyle = ink;
     ctx.beginPath();
     const arms = [x, y];
@@ -270,14 +289,15 @@ export function fourierName({ canvas, glyphs, readout, slider, replay, onConverg
       }
       x = nx; y = ny;
     }
-    ctx.globalAlpha = 0.09 * fade;
+    ctx.globalAlpha = circleAlpha * fade;
     ctx.stroke();
 
+    ctx.lineWidth = circleWidth;
     ctx.beginPath();
     ctx.moveTo(arms[0], arms[1]);
     for (let i = 2; i < arms.length; i += 2) ctx.lineTo(arms[i], arms[i + 1]);
     ctx.lineTo(x, y);
-    ctx.globalAlpha = 0.4 * fade;
+    ctx.globalAlpha = armAlpha * fade;
     ctx.stroke();
 
     ctx.globalAlpha = 1;
@@ -294,7 +314,12 @@ export function fourierName({ canvas, glyphs, readout, slider, replay, onConverg
     K = Math.max(1, Math.round(2 ** Number(slider.value)));
   });
   replay?.addEventListener('click', () => {
-    mode = still ? 'rest' : 'intro';
+    if (still) {
+      mode = 'rest';
+    } else {
+      mode = 'autoplay';
+      autoplayIndex = 0;
+    }
     t0 = null;
   });
 
