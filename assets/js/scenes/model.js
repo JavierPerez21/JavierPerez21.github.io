@@ -7,14 +7,14 @@
  * DOM buttons (focusable, clickable) positioned on top of the canvas.
  */
 import { rng } from '../lib/rng.js';
-import { clamp, cssVar, el, hidpi, invLerp, isCoarse, lerp, reducedMotion, scrollProgress, smoother, visibleLoop } from '../lib/util.js';
+import { clamp, cssVar, el, hidpi, invLerp, isCoarse, lerp, reducedMotion, scrollProgress, smooth, smoother, visibleLoop } from '../lib/util.js';
 
 const D = 1300; // spacing between layers (world units)
 const F = 760; // camera distance at which a layer is "in focus"
 const NEAR = 40;
 const XW = 1000; // half-width of a layer plane
 
-export function insideModel({ section, canvas, labelsRoot, hud, layers, tokens, skillGroups, onOpen }) {
+export function insideModel({ section, canvas, labelsRoot, hud, layers, tokens, skillGroups, onOpen, holdVh = 0 }) {
   const ink = cssVar('--ink') || '#121212';
   const accent = cssVar('--accent') || '#ff4d1f';
   const mono = cssVar('--mono') || 'monospace';
@@ -37,6 +37,7 @@ export function insideModel({ section, canvas, labelsRoot, hud, layers, tokens, 
           ph: rand() * Math.PI * 2,
           fr: rand.range(0.5, 1.8),
           base: rand.range(0.12, 0.42),
+          born: rand(), // when it appears as the network is built
         });
       }
     }
@@ -206,7 +207,7 @@ export function insideModel({ section, canvas, labelsRoot, hud, layers, tokens, 
 
   function targetZ(p) {
     const s = p * (L + 1);
-    if (s < 1) return lerp(Zs, Zk(0), smoother(invLerp(0.25, 1, s)));
+    if (s < 1) return lerp(Zs, Zk(0), smoother(invLerp(0.05, 1, s))); // fly in straight after the arrival hold
     const k = Math.min(L - 1, Math.floor(s - 1));
     const f = s - 1 - k;
     return lerp(Zk(k), k === L - 1 ? Ze : Zk(k + 1), smoother(invLerp(0.55, 1, f)));
@@ -243,6 +244,12 @@ export function insideModel({ section, canvas, labelsRoot, hud, layers, tokens, 
     hud.box.classList.add('swap');
   }
 
+  /* ---------- being built ---------- */
+  // 0 → 1 while §02's futures land on it: the planes, then their neurons, appear.
+  let built = 1;
+  const builtFor = (k) => smooth(clamp((built - k * 0.15) / 0.4));
+  const bornAlpha = (b, n) => smooth(clamp((b - n.born * 0.75) / 0.25));
+
   /* ---------- frame ---------- */
   const A = { x: 0, y: 0, s: 0, d: 0 }, B = { x: 0, y: 0, s: 0, d: 0 };
   const vars = {};
@@ -252,7 +259,10 @@ export function insideModel({ section, canvas, labelsRoot, hud, layers, tokens, 
   };
 
   function frame(time, dt) {
-    const p = scrollProgress(section);
+    // The first holdVh of the section is a pinned pause (the arrival from §02).
+    const raw = scrollProgress(section);
+    const hold = (holdVh * window.innerHeight) / Math.max(1, section.offsetHeight - window.innerHeight);
+    const p = clamp(invLerp(hold, 1, raw));
     const tz = targetZ(p);
     const ease = still ? 1 : 1 - Math.exp(-dt * 6);
     cam.z += (tz - cam.z) * ease;
@@ -288,7 +298,8 @@ export function insideModel({ section, canvas, labelsRoot, hud, layers, tokens, 
   function drawPlane(ctx, P, time) {
     const d = P.z - cam.z;
     if (d < NEAR) return;
-    const alpha = planeAlpha(d);
+    const bk = builtFor(P.k);
+    const alpha = planeAlpha(d) * bk;
     if (alpha <= 0.002) return;
 
     // Frame of the layer + its name.
@@ -311,7 +322,7 @@ export function insideModel({ section, canvas, labelsRoot, hud, layers, tokens, 
       if (A.x < -20 || A.x > view.w + 20 || A.y < -20 || A.y > view.h + 20) continue;
       const act = still ? 0 : Math.max(0, Math.sin(time * n.fr + n.ph)) ** 12;
       const r = Math.max(0.7, 2.4 * A.s * (1 + act));
-      ctx.globalAlpha = alpha * (n.base + act * 0.75);
+      ctx.globalAlpha = alpha * bornAlpha(bk, n) * (n.base + act * 0.75);
       ctx.fillStyle = act > 0.4 ? accent : ink;
       if (r < 1.6) ctx.fillRect(A.x - r, A.y - r, r * 2, r * 2);
       else { ctx.beginPath(); ctx.arc(A.x, A.y, r, 0, Math.PI * 2); ctx.fill(); }
@@ -373,7 +384,7 @@ export function insideModel({ section, canvas, labelsRoot, hud, layers, tokens, 
   function drawEdges(ctx, P, Q) {
     const dA = P.z - cam.z, dB = Q.z - cam.z;
     if (dB < NEAR) return;
-    const alpha = Math.min(planeAlpha(Math.max(dA, NEAR + 1)) + (dA < NEAR ? 0.6 : 0), planeAlpha(dB) + 0.25);
+    const alpha = Math.min(planeAlpha(Math.max(dA, NEAR + 1)) + (dA < NEAR ? 0.6 : 0), planeAlpha(dB) + 0.25) * builtFor(Q.k);
     if (alpha <= 0.003) return;
     ctx.strokeStyle = ink;
     ctx.lineWidth = 0.6;
@@ -429,7 +440,7 @@ export function insideModel({ section, canvas, labelsRoot, hud, layers, tokens, 
       const v = p.e.a.v + (p.e.b.v - p.e.a.v) * p.t;
       if (!project(u, v, z, A)) continue;
       const fade = Math.sin(Math.PI * p.t);
-      ctx.globalAlpha = 0.9 * fade * clamp(planeAlpha(A.d) + 0.3);
+      ctx.globalAlpha = 0.9 * fade * clamp(planeAlpha(A.d) + 0.3) * builtFor(p.k + 1);
       const r = Math.max(0.8, 2.2 * A.s);
       ctx.beginPath();
       ctx.arc(A.x, A.y, r, 0, Math.PI * 2);
@@ -460,4 +471,24 @@ export function insideModel({ section, canvas, labelsRoot, hud, layers, tokens, 
   }
 
   visibleLoop(section, frame, { margin: '0px' });
+
+  return {
+    /** Neurons of the input layer as seen from the starting camera distance,
+     *  in canvas px; the sampled futures of §02 land on these. */
+    entry() {
+      const P = planes[0], s = fl / (P.z - Zs), out = [];
+      for (const n of [...P.named, ...P.anon]) {
+        out.push([cx + (n.u * X - cam.x) * s, cy + (n.v * Y - cam.y) * s, n.kind ? groupColor[n.data.group] || accent : null]);
+      }
+      return out;
+    },
+    /** How far the camera has zoomed in on the input layer since the start:
+     *  a uniform scale about (cx, cy). Infinity once the layer is behind us. */
+    zoom() {
+      const d = planes[0].z - cam.z;
+      return { k: d > NEAR ? (planes[0].z - Zs) / d : Infinity, cx, cy };
+    },
+    /** 0 → 1 as the network is built. */
+    setBuilt(b) { built = clamp(b); },
+  };
 }

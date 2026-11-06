@@ -6,6 +6,7 @@ import * as content from './content.js';
 import { fourierName } from './scenes/fourier.js';
 import { lifePaths } from './scenes/paths.js';
 import { seriesToSamples } from './scenes/bridge.js';
+import { samplesToNeurons } from './scenes/descent.js';
 import { insideModel } from './scenes/model.js';
 import { nextTokenSampler } from './scenes/sampler.js';
 import { createDrawer } from './ui/drawer.js';
@@ -38,7 +39,7 @@ const paths = safely('paths', () => {
   });
 });
 
-/* 01 · Fourier name, and the fall from it into §02 */
+/* 01 · Fourier monogram, and the fall from it into §02 */
 const hero = $('#series');
 fetch(new URL('../data/name-glyphs.json', import.meta.url))
   .then((r) => r.json())
@@ -51,6 +52,7 @@ fetch(new URL('../data/name-glyphs.json', import.meta.url))
       slider: $('[data-harmonics]', hero),
       replay: $('[data-replay]', hero),
       onConverged: () => hero.classList.add('is-converged'),
+      onLayout: ({ bottom }) => hero.style.setProperty('--name-top', `${bottom}px`),
     });
     hero.classList.add('has-canvas');
     if (paths) {
@@ -66,12 +68,14 @@ fetch(new URL('../data/name-glyphs.json', import.meta.url))
 
 /* 03 · Inside the model */
 const drawer = safely('drawer', () => createDrawer($('#drawer')));
-safely('model', () => {
-  const s = $('#model');
+const modelSection = $('#model');
+const MODEL_HOLD = 0.7; // viewports §03 stays pinned while §02's futures land and its network builds
+const model = safely('model', () => {
+  const s = modelSection;
   const rail = $('.model-rail', s);
   const railItems = content.layers.map((l, i) => el('li', {}, el('span', {}, `L${i}`), l.op));
   rail.append(...railItems);
-  insideModel({
+  return insideModel({
     section: s,
     canvas: $('canvas', s),
     labelsRoot: $('.model-labels', s),
@@ -87,8 +91,16 @@ safely('model', () => {
     tokens: content.tokens,
     skillGroups: content.skillGroups,
     onOpen: (payload) => drawer?.open(payload),
+    holdVh: MODEL_HOLD,
   });
 });
+
+/* 02 → 03 · the futures flow down into the network */
+if (paths && model) {
+  safely('descent', () => samplesToNeurons({
+    paths, pathsSection, plotCanvas: $('canvas', pathsSection), model, modelSection, modelCanvas: $('canvas', modelSection), holdVh: MODEL_HOLD,
+  }));
+}
 
 /* 04 · Model card */
 safely('model-card', () => renderModelCard($('[data-modelcard]'), content));

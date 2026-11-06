@@ -28,31 +28,191 @@ export const profile = {
 
 export const NOW = 2026.85;
 
-/* Organisations shown as a badge on milestone cards. Drop an official logo
-   file in assets/img/logos/ and set `logo` to show it instead of the badge. */
+/* Organisations behind the milestones. `icon` is the small mark on a card,
+   `logo` the full logo in its expanded view (official artwork, in
+   assets/img/logos/). */
 export const orgs = {
-  qb: { name: 'QuantumBlack, AI by McKinsey', mark: 'QB', color: '#121212', logo: null },
-  mck: { name: 'McKinsey & Company', mark: 'McK', color: '#051c2c', logo: null },
-  ubc: { name: 'University of British Columbia', mark: 'UBC', color: '#002145', logo: null },
+  qb: { name: 'QuantumBlack, AI by McKinsey', icon: 'assets/img/logos/qb-mark.png', logo: 'assets/img/logos/qb-wordmark.png', href: 'https://www.mckinsey.com/capabilities/quantumblack/how-we-help-clients' },
+  mck: { name: 'McKinsey & Company', icon: 'assets/img/logos/mckinsey.svg', logo: 'assets/img/logos/mckinsey.svg', href: 'https://www.mckinsey.com/' },
+  ubc: { name: 'University of British Columbia', icon: 'assets/img/logos/ubc-mark.svg', logo: 'assets/img/logos/ubc.svg', href: 'https://ok.ubc.ca/' },
 };
 
+/* Each milestone is a card under the plot; `detail` is what it shows when
+   clicked open: a summary, bullet points, an optional image and links. */
 export const milestones = [
-  { t: 2016.3, z: 0.35, when: '2016', title: 'First prize, Spring Mathematics Competition', where: 'La Rioja, Spain', note: 'XVIII edition. The earliest data point.' },
-  { t: 2018.2, z: 0.55, when: '2018', title: 'Bronze medal, Spanish Physics Olympiad', where: 'Local phase · Universidad de La Rioja' },
-  { t: 2018.7, z: 0.95, when: 'Sep 2018', org: 'ubc', title: 'B.Sc. Physics & Mathematics begins', where: 'University of British Columbia · Kelowna, Canada', note: 'International Major Entrance Scholarship · Outstanding International Student.' },
-  { t: 2019.05, z: 1.1, when: '2018 – 19', title: 'Won CAN-SBX', where: 'Canadian Stratospheric Balloon Experiment', note: 'Co-led the team that designed a stratospheric particle-flux experiment, later flown on Canadian Space Agency campaigns.' },
-  { t: 2019.45, z: 1.05, when: 'Jun 2019', title: 'Crop classification for the UN World Food Programme', where: 'Omdena', note: 'Managed the data-labelling team locating rice and wheat fields in Nepal from satellite imagery.' },
-  { t: 2020.7, z: 0.85, when: 'Sep 2020', org: 'ubc', title: 'Teaching Assistant, Calculus I', where: 'UBC · MATH 116' },
-  { t: 2021.35, z: 1.05, when: 'May 2021', org: 'ubc', title: 'Machine Learning Researcher', where: 'UBC · DAIS & IDSL labs', note: 'Adversarial robustness, adaptive control, biomolecular ML.' },
-  { t: 2021.8, z: 1.2, when: 'Oct 2021', title: 'First paper, at IEEE SMC 2021', where: 'Is Timing Critical to Trace Reconstruction?' },
-  { t: 2022.15, z: 1.35, when: 'Feb 2022', title: 'QHack 2022: #29 out of 800+', where: 'Quantum computing hackathon', note: 'All 25 coding challenges solved, with Qiskit and PennyLane.' },
-  { t: 2022.33, z: 1.4, when: 'Apr 2022', title: 'AGS published at IDA 2022', where: 'Attribution Guided Sharpening', note: 'State-of-the-art defence against AutoAttack.' },
-  { t: 2022.45, z: 1.42, when: 'Jun 2022', org: 'mck', title: 'Data Science Intern at McKinsey', where: 'McKinsey & Company · Madrid' },
-  { t: 2023.4, z: 1.5, when: '2023', org: 'ubc', title: 'Graduated with a 96.2% average', where: 'UBC · Graduating Student Award', note: 'Aptamer-search paper published in ACS Synthetic Biology.' },
-  { t: 2023.7, z: 1.55, when: 'Sep 2023', org: 'qb', title: 'Data Scientist at QuantumBlack', where: 'QuantumBlack, AI by McKinsey · Madrid' },
-  { t: 2024.85, z: 1.62, when: 'Nov 2024', org: 'qb', title: 'Senior Data Scientist at QuantumBlack', where: 'QuantumBlack, AI by McKinsey', note: 'Energy trading, refining, retail banking.' },
-  { t: 2025.85, z: 1.72, when: 'Nov 2025', org: 'qb', title: 'Associate, Data Science at QuantumBlack', where: 'QuantumBlack, AI by McKinsey', note: 'Leading data-science teams of 5+ across energy, banking and telecom.' },
-  { t: NOW, z: 1.78, when: 'now', title: 'You are here', where: 'Madrid · QuantumBlack, AI by McKinsey', note: 'Everything to the right is still being sampled.' },
+  {
+    t: 2016.3, z: 0.35, when: '2016', title: 'First prize, Spring Mathematics Competition', where: 'La Rioja, Spain', note: 'XVIII edition. The earliest data point.',
+    detail: {
+      summary: 'First prize in the XVIII Spring Mathematics Competition of La Rioja (Concurso de Primavera), organised by Aprima, the region’s association of mathematics teachers.',
+      points: ['A problem-solving competition for secondary-school students across La Rioja.', 'The first sign that the path would bend towards mathematics.'],
+    },
+  },
+  {
+    t: 2018.2, z: 0.55, when: '2018', title: 'Bronze medal, Spanish Physics Olympiad', where: 'Local phase · Universidad de La Rioja',
+    detail: {
+      summary: 'Bronze medal in the local phase of the Spanish Physics Olympiad, held at the Universidad de La Rioja, in my last year of secondary school.',
+      points: ['A few months later I left Spain to study physics and mathematics in Canada.'],
+    },
+  },
+  {
+    t: 2018.7, z: 0.95, when: 'Sep 2018', org: 'ubc', title: 'B.Sc. Physics & Mathematics begins', where: 'University of British Columbia · Kelowna, Canada', note: 'International Major Entrance Scholarship · Outstanding International Student.',
+    detail: {
+      summary: 'Moved from Spain to Kelowna, British Columbia, to start a combined B.Sc. in Physics and Mathematics at UBC’s Okanagan campus.',
+      points: [
+        'International Major Entrance Award and Outstanding International Student Award (2018).',
+        'International Student Faculty Award (2019, 2020) and Deputy Vice-Chancellor Award for International Students (2019, 2020, 2022).',
+        'Co-founded UBC’s Student Independent Research Club.',
+      ],
+    },
+  },
+  {
+    t: 2019.05, z: 1.1, when: '2018 – 19', title: 'Won CAN-SBX', where: 'Canadian Stratospheric Balloon Experiment', note: 'Co-led the team that designed a stratospheric particle-flux experiment, later flown on Canadian Space Agency campaigns.',
+    detail: {
+      summary: 'In my first year at UBC I co-led AC2O, the undergraduate team that won the 2018 Canadian Stratospheric Balloon Experiment (CAN-SBX) design challenge.',
+      points: [
+        'We designed and built an experiment to measure particle flux in the stratosphere.',
+        'It flew on the Canadian Space Agency’s 2019 Stratos balloon campaign.',
+      ],
+      image: 'assets/img/work/balloon.webp',
+      links: [
+        { label: 'Project', href: 'https://ac2oubco.wixsite.com/ac2o' },
+        { label: 'Video', href: 'https://www.youtube.com/watch?v=mPEmIPTtRMk' },
+      ],
+    },
+  },
+  {
+    t: 2019.45, z: 1.05, when: 'Jun 2019', title: 'Crop classification for the UN World Food Programme', where: 'Omdena', note: 'Managed the data-labelling team locating rice and wheat fields in Nepal from satellite imagery.',
+    detail: {
+      summary: 'Data-labelling team manager (Jun – Aug 2019) on Omdena’s crop-classification challenge with the UN World Food Programme: locating rice and wheat fields in Nepal during the growing season, from satellite imagery and deep learning.',
+      points: [
+        'Organised the labelling team and its tasks, and coordinated our work with the modelling teams.',
+        'Built the data-labelling pipeline that enabled 89% crop-identification accuracy.',
+        'The learnings became an article: 7 steps to build a quality satellite-imagery dataset for agriculture.',
+      ],
+      image: 'assets/img/work/satellite.webp',
+      links: [
+        { label: 'Project', href: 'https://omdena.com/projects/cropclassification/' },
+        { label: 'Article', href: 'https://omdena.com/blog/satellite-imagery-dataset/' },
+      ],
+    },
+  },
+  {
+    t: 2020.7, z: 0.85, when: 'Sep 2020', org: 'ubc', title: 'Teaching Assistant, Calculus I', where: 'UBC · MATH 116',
+    detail: {
+      summary: 'Teaching Assistant for MATH 116, Calculus I for Management and Economics, from September 2020 to April 2021.',
+      points: ['Ran the tutorial sections.', 'Helped students with their questions and went back over material that had not landed in lectures.'],
+    },
+  },
+  {
+    t: 2021.35, z: 1.05, when: 'May 2021', org: 'ubc', title: 'Machine Learning Researcher', where: 'UBC · DAIS & IDSL labs', note: 'Adversarial robustness, adaptive control, biomolecular ML.',
+    detail: {
+      summary: 'Machine Learning Researcher (May 2021 – Apr 2022) in UBC’s IDSL and DAIS labs, working with Dr Apurva Narayan.',
+      points: [
+        'Robust deep learning: a new defence against adversarial attacks that clearly outperformed earlier ones against AutoAttack (AGS).',
+        'Deep-learning system identification for linear systems, and a new method for adaptive model predictive control.',
+        'Aptamer–compound affinity prediction and ML-directed aptamer search.',
+        'cCGen: a conditional classifier-generator for imbalanced classification.',
+      ],
+      image: 'assets/img/work/mpc.webp',
+    },
+  },
+  {
+    t: 2021.8, z: 1.2, when: 'Oct 2021', title: 'First paper, at IEEE SMC 2021', where: 'Is Timing Critical to Trace Reconstruction?',
+    detail: {
+      summary: '“Is Timing Critical to Trace Reconstruction?”, with Apurva Narayan, at the 2021 IEEE International Conference on Systems, Man, and Cybernetics.',
+      points: ['Time-series research on reconstructing event traces, and on how much their timing information matters.'],
+      links: [{ label: 'Paper', href: 'https://ieeexplore.ieee.org/abstract/document/9658712' }],
+    },
+  },
+  {
+    t: 2022.15, z: 1.35, when: 'Feb 2022', title: 'QHack 2022: #29 out of 800+', where: 'Quantum computing hackathon', note: 'All 25 coding challenges solved, with Qiskit and PennyLane.',
+    detail: {
+      summary: 'Led team QSolutions at QHack 2022. We solved all 25 of 25 coding challenges and ranked #29 of 800+ teams worldwide.',
+      points: [
+        'Quantum algorithms, quantum machine learning and quantum chemistry, built with Qiskit and PennyLane.',
+        'Also an IBM Certified Associate Developer in Quantum Computation using Qiskit.',
+      ],
+      image: 'assets/img/work/qhack2022.webp',
+      links: [
+        { label: 'Solutions', href: 'https://github.com/JavierPerez21/QHack2022' },
+        { label: 'Certificate', href: 'assets/docs/qhack-2022-certificate.pdf' },
+      ],
+    },
+  },
+  {
+    t: 2022.33, z: 1.4, when: 'Apr 2022', title: 'AGS published at IDA 2022', where: 'Attribution Guided Sharpening', note: 'State-of-the-art defence against AutoAttack.',
+    detail: {
+      summary: '“AGS: Attribution Guided Sharpening as a Defense Against Adversarial Attacks”, with Phillip Braun and Apurva Narayan, in Advances in Intelligent Data Analysis XX (IDA 2022, Springer).',
+      points: [
+        'A defence for computer-vision classifiers, guided by attribution (explainability) maps.',
+        'State-of-the-art results against AutoAttack on benchmark datasets, well ahead of earlier defences.',
+      ],
+      image: 'assets/img/work/adversarial.webp',
+      links: [{ label: 'Paper', href: 'https://link.springer.com/chapter/10.1007/978-3-031-01333-1_18' }],
+    },
+  },
+  {
+    t: 2022.45, z: 1.42, when: 'Jun 2022', org: 'mck', title: 'Data Science Intern at McKinsey', where: 'McKinsey & Company · Madrid',
+    detail: {
+      summary: 'Data Science Intern at McKinsey & Company in Madrid (Jun – Jul 2022): my first contact with industry.',
+      points: [
+        'Optimisation models for futures pricing and asset allocation.',
+        'Productionised the models and migrated them to the cloud.',
+      ],
+    },
+  },
+  {
+    t: 2023.4, z: 1.5, when: '2023', org: 'ubc', title: 'Graduated with a 96.2% average', where: 'UBC · Graduating Student Award', note: 'Aptamer-search paper published in ACS Synthetic Biology.',
+    detail: {
+      summary: 'Graduated from UBC with a B.Sc. in Physics and Mathematics and a 96.2% cumulative average.',
+      points: [
+        'Graduating Student Award in Physics & Mathematics.',
+        '“Machine Learning Directed Aptamer Search from Conserved Primary Sequence and Secondary Structure”, in ACS Synthetic Biology (2023). The predicted sequences were validated experimentally.',
+        '“Improving imbalanced dataset classification using Conditional Classifier-Generator (cCGen)”, at IEEE SMC 2022.',
+      ],
+      image: 'assets/img/work/aptamerprotein.webp',
+      links: [{ label: 'Aptamer preprint', href: 'https://chemrxiv.org/engage/chemrxiv/article-details/630a2dafd858fb0f695e65f2' }],
+    },
+  },
+  {
+    t: 2023.7, z: 1.55, when: 'Sep 2023', org: 'qb', title: 'Data Scientist at QuantumBlack', where: 'QuantumBlack, AI by McKinsey · Madrid',
+    detail: {
+      summary: 'Joined QuantumBlack, AI by McKinsey, in Madrid as a Data Scientist, starting in energy.',
+      points: [
+        'AI-native energy trading for a major Spanish utility: ML forecasting and Gurobi-based multi-asset optimisation feeding the desk’s daily decisions.',
+        'A digital twin of a refinery for a Spanish energy player, with real-time ML models predicting crude properties and optimisation built into operations.',
+      ],
+    },
+  },
+  {
+    t: 2024.85, z: 1.62, when: 'Nov 2024', org: 'qb', title: 'Senior Data Scientist at QuantumBlack', where: 'QuantumBlack, AI by McKinsey', note: 'Energy trading, refining, retail banking.',
+    detail: {
+      summary: 'Promoted to Senior Data Scientist, owning end-to-end AI workstreams from proof of concept to deployment.',
+      points: [
+        'ML-driven deposit pricing for a leading German retail bank: price-sensitivity and portfolio-allocation models, with measurable P&L impact in under four weeks.',
+        'Wave-based deployment, then expansion to the full portfolio under management.',
+        'Capability building across client software-development teams.',
+      ],
+    },
+  },
+  {
+    t: 2025.85, z: 1.72, when: 'Nov 2025', org: 'qb', title: 'Associate, Data Science at QuantumBlack', where: 'QuantumBlack, AI by McKinsey', note: 'Leading data-science teams of 5+ across energy, banking and telecom.',
+    detail: {
+      summary: 'Associate, Data Science: leading data-science teams of 5+ across energy, banking and telecom.',
+      points: [
+        'Customer-value optimisation for major Latin American and Iberian telcos: ML targeting and a company-wide optimisation “brain” for segmentation, targeting and campaigns.',
+        'LLM-based solutions for call-transcription analytics and knowledge retrieval, and a redesign of the data-lake architecture.',
+      ],
+    },
+  },
+  {
+    t: NOW, z: 1.78, when: 'now', org: 'qb', title: 'You are here', where: 'Madrid · QuantumBlack, AI by McKinsey', note: 'Everything to the right is still being sampled: scroll on.',
+    detail: {
+      summary: 'Based in Madrid, building AI that survives contact with the real world: optimisation, ML and LLM systems in production.',
+      points: ['Everything to the right of this line is still being sampled. Scroll on to see some of the futures.'],
+      links: [{ label: 'Get in touch', href: '#next' }],
+    },
+  },
 ];
 
 /* ------------------------------------------------------------------ */

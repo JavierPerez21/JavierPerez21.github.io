@@ -6,8 +6,8 @@ The page walks through the history of AI in five chapters, each one an interacti
 
 | § | Chapter | Era | What happens |
 |---|---------|-----|--------------|
-| 01 | **Series** | Fourier, 1807 | The outline of my name is one closed curve, transformed with an FFT. Partial sums *S<sub>K</sub>* converge on the name while a chain of epicycles traces it. |
-| 02 | **Paths** | Monte Carlo, 1946 | The Fourier pen random-walks down to t₀ and 2,048 Brownian lives spawn from it. Mine, a Brownian bridge pinned through real milestones, then plays itself, dropping each milestone into a timeline before fanning out into the future. |
+| 01 | **Series** | Fourier, 1807 | The outline of my monogram, JPT, is one closed curve, transformed with an FFT. Partial sums *S<sub>K</sub>* converge on it while a chain of epicycles traces it; the full name is set beneath. |
+| 02 | **Paths** | Monte Carlo, 1946 | The Fourier pen random-walks down to t₀ and 2,048 Brownian lives spawn from it. Mine, a Brownian bridge pinned through real milestones, then plays itself up to *now*, dropping each milestone into a timeline of cards that open up on click. Scrolling on samples its futures, which flow down the page onto the network's input layer as it builds itself, then scale out of frame as the camera flies in. |
 | 03 | **Layers** | Attention, 2017 | A fly-through of a small transformer. Named neurons are projects and papers; click one to open its details. |
 | 04 | **Card** | | The CV as a model card. |
 | 05 | **Next** | | Contact links as a next-token softmax, with a temperature dial. |
@@ -36,9 +36,9 @@ assets/
     main.js             entry point, wires scenes to the DOM
     explore.js          /explore field + lightbox
     lib/                fft.js · rng.js (seeded) · util.js
-    scenes/             fourier.js · bridge.js (§01→§02 fall) · paths.js · model.js · sampler.js
+    scenes/             fourier.js · bridge.js (§01→§02 fall) · paths.js · descent.js (§02→§03 futures) · model.js · sampler.js
     ui/                 nav.js · reveal.js · drawer.js · modelcard.js
-  data/name-glyphs.json glyph outlines of the name (generated)
+  data/name-glyphs.json glyph outlines of the monogram (generated)
   img/                  favicon, og.png, work/ (figures), explore/ (photos)
   docs/                 certificates
 scripts/                dev tooling (not used at runtime)
@@ -48,6 +48,7 @@ scripts/                dev tooling (not used at runtime)
 
 - **Text, experience, papers, milestones, links**: `assets/js/content.js`.
   - `milestones` drives the Monte Carlo chapter. `z` is how many σ above the ensemble mean the path passes through at that moment.
+    Each milestone's `detail` (summary, points, image, links) is what its card shows when clicked open; `org` picks a logo from `orgs` (files in `assets/img/logos/`).
   - `layers[].items` are the named neurons. `tags` link an item to embedding tokens (shown as "input tokens" and as attention lines on hover).
   - `NOW` sets where "you are here" sits on the timeline.
 - **Colours and fonts**: `assets/css/tokens.css`.
@@ -63,7 +64,7 @@ Any static server works. `serve.py` only exists because Python's default server 
 ## Regenerating assets
 
 ```bash
-# Name outlines for the Fourier hero (needs fontTools; font from Google Fonts)
+# Monogram outlines for the Fourier hero (needs fontTools; font from Google Fonts)
 python scripts/build_name_glyphs.py InstrumentSerif-Regular.ttf
 
 # Photos for /explore (then list them in content.js → photos)

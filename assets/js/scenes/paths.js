@@ -6,7 +6,8 @@
  * realised path is a Brownian bridge pinned through the milestones in
  * content.js (each sitting z σ above the ensemble mean); scroll drives its
  * clock, and each milestone it reaches pops out of the line and drops into a
- * timeline under the plot. Past "now" the path fans out into the future.
+ * timeline under the plot. The line stops at "now": the future is sampled
+ * by scrolling on (see scenes/descent.js), and flows down into §03.
  */
 import { rng } from '../lib/rng.js';
 import { clamp, cssVar, el, hidpi, invLerp, isCoarse, lerp, smooth, visibleLoop } from '../lib/util.js';
@@ -20,7 +21,6 @@ const ME = 1729; // the path label (Hardy–Ramanujan, naturally)
 const GEN_TAU = 0.26; // path k appears at GEN_TAU·ln(k + 2) s: one by one, then a flood
 const TRACE0 = 0.45; // seconds the first path takes to draw itself; later ones are quicker
 const LIFE_SPEED = 2; // years of my path drawn per second
-const FUTURE_SPEED = 3.2; // years per second once past "now"
 const MS_HOLD = 0.3; // seconds the line pauses on each milestone
 const NOW_HOLD = 0.8; // ...and on "now"
 const SVG = 'http://www.w3.org/2000/svg';
@@ -32,7 +32,6 @@ export function lifePaths({ section, canvas, timelineRoot, hud, replayBtn, miles
   const mono = cssVar('--mono') || 'monospace';
   const setText = (node, txt) => { if (node.textContent !== txt) node.textContent = txt; };
   const nPaths = isCoarse() || window.innerWidth < 700 ? 900 : 2048;
-  const steps = Math.round((T1 - T0) / DT);
   const iNow = Math.round((now - T0) / DT);
   const tAt = (i) => T0 + i * DT;
   const iOf = (t) => Math.round((t - T0) / DT);
@@ -63,25 +62,10 @@ export function lifePaths({ section, canvas, timelineRoot, hud, replayBtn, miles
     }
   }
 
-  const nFan = 260;
-  const fan = [];
-  for (let p = 0; p < nFan; p++) {
-    const a = new Float32Array(steps - iNow + 1);
-    a[0] = me[iNow];
-    for (let i = 1; i < a.length; i++) a[i] = a[i - 1] + MU * DT + SIGMA * Math.sqrt(DT) * rand.normal();
-    fan.push(a);
-  }
-  const bands = [0.05, 0.25, 0.5, 0.75, 0.95].map(() => new Float32Array(steps - iNow + 1));
-  const col = new Float32Array(nFan);
-  for (let i = 0; i <= steps - iNow; i++) {
-    for (let p = 0; p < nFan; p++) col[p] = fan[p][i];
-    col.sort();
-    [0.05, 0.25, 0.5, 0.75, 0.95].forEach((q, b) => { bands[b][i] = col[Math.floor(q * (nFan - 1))]; });
-  }
-
+  // Headroom for the futures that sprout from "now" (their p95 at T1).
   const last = Float32Array.from(ensemble, (a) => a[iNow]).sort();
   const yLo = Math.min(last[Math.floor(nPaths * 0.004)], -1) - 0.6;
-  const yHi = Math.max(bands[4][bands[4].length - 1], me[iNow]) + 1.2;
+  const yHi = me[iNow] + MU * (T1 - now) + 1.645 * SIGMA * Math.sqrt(T1 - now) + 1.2;
 
   /* ---------- generation schedule ---------- */
   const appearAt = (k) => GEN_TAU * Math.log(k + 2);
@@ -89,27 +73,129 @@ export function lifePaths({ section, canvas, timelineRoot, hud, replayBtn, miles
   const highlight = (k) => k < 6 || k % Math.floor(nPaths / 24) === 0;
 
   /* ---------- timeline of milestones ---------- */
-  /** Logo of the organisation behind a milestone, or a small monogram badge. */
-  const orgBadge = (o) => {
-    if (!o) return null;
-    if (o.logo) return el('img.ms-logo', { src: o.logo, alt: o.name, title: o.name });
-    return el('span.ms-org', { title: o.name, style: { '--org': o.color } }, o.mark);
-  };
+  /** The organisation's mark, small, for the corner of a card. */
+  const orgBadge = (o) => (o?.icon ? el('img.ms-logo', { src: o.icon, alt: o.name, title: o.name, draggable: 'false' }) : null);
 
   const INTRO = `${nPaths.toLocaleString('en')} trajectories, simulated from the same starting point. One of them is mine.`;
-  const OUTRO = 'The probability of this exact path was zero. And yet, here we are; the rest is still being sampled.';
+  const OUTRO = 'The probability of this exact path was zero. And yet, here we are. Scroll on to sample what comes next.';
   const caption = el('p.ms-caption', {}, INTRO);
   const leaders = document.createElementNS(SVG, 'svg');
   leaders.setAttribute('class', 'ms-leaders');
   leaders.setAttribute('aria-hidden', 'true');
   const lines = milestones.map(() => leaders.appendChild(document.createElementNS(SVG, 'line')));
   const cards = milestones.map((m, k) =>
-    el('li.ms-card', { style: { zIndex: k + 1 } },
-      el('span.ms-head', {}, el('span.ms-when', {}, m.when), orgBadge(orgs[m.org])),
-      el('span.ms-title', {}, m.title),
-      m.where ? el('span.ms-where', {}, m.where) : null));
+    el('li.ms-card', {
+      style: { zIndex: k + 1 },
+      tabindex: '-1',
+      role: m.detail ? 'button' : null,
+      'aria-haspopup': m.detail ? 'dialog' : null,
+      'aria-label': m.detail ? `${m.when}: ${m.title}. Open details` : null,
+    },
+    el('span.ms-head', {}, orgBadge(orgs[m.org]), el('span.ms-when', {}, m.when)), // logo left: fanned cards cover each other's right edge
+    el('span.ms-title', {}, m.title),
+    m.where ? el('span.ms-where', {}, m.where) : null,
+    m.detail ? el('span.ms-more', { 'aria-hidden': 'true' }, '+') : null));
   const band = el('div.ms-band', {}, leaders, el('ol.ms-cards', { 'aria-label': 'Milestones' }, cards));
   timelineRoot.append(caption, band);
+
+  /* ---------- a card, opened ---------- */
+  // Clicking a card grows it (FLIP: from the card's own box) into a larger
+  // panel over the plot, with the details of that milestone. The life line
+  // waits while it is open.
+  const stage = timelineRoot.closest('.paths-sticky') || section;
+  const scrim = el('div.ms-scrim', { 'aria-hidden': 'true', onclick: () => closeCard() });
+  const panel = el('div.ms-detail', { role: 'dialog', 'aria-modal': 'true', 'aria-hidden': 'true', tabindex: '-1' });
+  stage.append(scrim, panel);
+  let openK = -1, panelAnim = null, lastFocus = null;
+
+  function fillPanel(k) {
+    const m = milestones[k], d = m.detail, o = orgs[m.org];
+    const logo = o?.logo ? el('img.ms-d-logo', { src: o.logo, alt: o.name }) : null;
+    panel.replaceChildren(el('div.ms-d-inner', {},
+      el('button.ms-close', { type: 'button', 'aria-label': 'Close details', onclick: () => closeCard() }, '×'),
+      el('div.ms-d-head', {},
+        el('span.ms-when', {}, m.when),
+        logo && (o.href ? el('a.ms-d-org', { href: o.href, target: '_blank', rel: 'noopener', title: o.name }, logo) : logo)),
+      el('h3.ms-d-title', { id: `ms-d-${k}` }, m.title),
+      m.where ? el('p.ms-d-where', {}, m.where) : null,
+      el(`div.ms-d-body${d.image ? '.has-image' : ''}`, {},
+        el('div.ms-d-text', {},
+          el('p.ms-d-summary', {}, d.summary),
+          d.points?.length ? el('ul.ms-d-points', {}, d.points.map((t) => el('li', {}, t))) : null),
+        d.image ? el('figure.ms-d-figure', {}, el('img', { src: d.image, alt: '', loading: 'lazy' })) : null),
+      d.links?.length
+        ? el('p.ms-d-links', {}, d.links.map((l) => el('a.btn.btn--ghost.btn--sm', l.href.startsWith('#')
+          ? { href: l.href, onclick: () => closeCard(true) }
+          : { href: l.href, target: '_blank', rel: 'noopener' }, `${l.label} ↗`)))
+        : null));
+    panel.setAttribute('aria-labelledby', `ms-d-${k}`);
+  }
+
+  /** The card's box, relative to the stage. */
+  function boxOf(node) {
+    const a = node.getBoundingClientRect(), b = stage.getBoundingClientRect();
+    return { x: a.left - b.left, y: a.top - b.top, w: a.width, h: a.height };
+  }
+
+  function openCard(k) {
+    if (!milestones[k].detail || !shown[k]) return;
+    if (openK >= 0) closeCard(true);
+    openK = k;
+    lastFocus = document.activeElement;
+    fillPanel(k);
+    const sw = stage.clientWidth, sh = stage.clientHeight;
+    const w = Math.min(680, sw - 32);
+    panel.style.width = `${w}px`;
+    panel.style.maxHeight = `${Math.max(240, sh - 140)}px`;
+    panel.classList.add('is-open');
+    panel.setAttribute('aria-hidden', 'false');
+    const h = panel.offsetHeight;
+    const to = { x: (sw - w) / 2, y: clamp((sh - h) / 2 + 20, 84, Math.max(84, sh - h - 16)) };
+    panel.style.left = `${to.x}px`;
+    panel.style.top = `${to.y}px`;
+    const from = boxOf(cards[k]);
+    cards[k].classList.add('is-lifted');
+    scrim.classList.add('is-on');
+    panelAnim?.cancel();
+    panelAnim = panel.animate([
+      { transform: `translate(${from.x - to.x}px, ${from.y - to.y}px) scale(${from.w / w}, ${from.h / h})`, borderRadius: '10px' },
+      { transform: 'none', borderRadius: '16px' },
+    ], { duration: 460, easing: 'cubic-bezier(.2, .8, .2, 1)' });
+    panel.classList.remove('is-ready');
+    panelAnim.onfinish = () => { panel.classList.add('is-ready'); panel.focus({ preventScroll: true }); };
+  }
+
+  function closeCard(instant = false) {
+    if (openK < 0) return;
+    const k = openK;
+    openK = -1;
+    scrim.classList.remove('is-on');
+    panel.classList.remove('is-ready');
+    panel.setAttribute('aria-hidden', 'true');
+    const done = () => {
+      panel.classList.remove('is-open');
+      cards[k].classList.remove('is-lifted');
+    };
+    panelAnim?.cancel();
+    if (instant) { done(); return; }
+    const to = boxOf(panel), from = boxOf(cards[k]);
+    panelAnim = panel.animate([
+      { transform: 'none', borderRadius: '16px', opacity: 1 },
+      { transform: `translate(${from.x - to.x}px, ${from.y - to.y}px) scale(${from.w / to.w}, ${from.h / to.h})`, borderRadius: '10px', opacity: 0.6 },
+    ], { duration: 320, easing: 'cubic-bezier(.4, 0, .2, 1)' });
+    panelAnim.onfinish = done;
+    if (lastFocus && document.contains(lastFocus)) lastFocus.focus({ preventScroll: true });
+  }
+
+  cards.forEach((c, k) => {
+    c.addEventListener('click', () => openCard(k));
+    c.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openCard(k); }
+    });
+  });
+  document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeCard(); });
+  // Scrolling the chapter away closes it.
+  new IntersectionObserver(([en]) => { if (!en.isIntersecting || en.intersectionRatio < 0.6) closeCard(true); }, { threshold: [0, 0.6] }).observe(stage);
 
   let hot = -1;
   cards.forEach((c, k) => {
@@ -154,6 +240,8 @@ export function lifePaths({ section, canvas, timelineRoot, hud, replayBtn, miles
       if (!flights[k]) {
         c.style.transform = shown[k] ? slotT(k) : dotT(k, 0.15);
         c.style.opacity = shown[k] ? '1' : '0';
+        c.tabIndex = shown[k] && milestones[k].detail ? 0 : -1;
+        c.classList.toggle('is-on', shown[k]);
       }
       const L = lines[k];
       L.setAttribute('x1', X(milestones[k].t));
@@ -195,6 +283,8 @@ export function lifePaths({ section, canvas, timelineRoot, hud, replayBtn, miles
     anim.onfinish = () => {
       c.style.transform = show ? slotT(k) : dotT(k, 0.15);
       c.style.opacity = show ? '1' : '0';
+      c.tabIndex = show && milestones[k].detail ? 0 : -1;
+      c.classList.toggle('is-on', show);
       anim.cancel();
       if (flights[k] === anim) flights[k] = null;
     };
@@ -203,7 +293,6 @@ export function lifePaths({ section, canvas, timelineRoot, hud, replayBtn, miles
   /* ---------- geometry & offscreen layers ---------- */
   let box = null, baked = 0;
   const cloud = document.createElement('canvas');
-  const future = document.createElement('canvas');
   const X = (t) => box.l + ((t - T0) / (T1 - T0)) * (box.r - box.l);
   const Y = (y) => box.b - ((y - yLo) / (yHi - yLo)) * (box.b - box.t);
   let cloudCtx = null, stride = 1;
@@ -244,34 +333,6 @@ export function lifePaths({ section, canvas, timelineRoot, hud, replayBtn, miles
     cloudCtx.strokeStyle = ink;
     cloudCtx.lineJoin = 'round';
     for (let k = 0; k < baked; k++) bake(k);
-
-    const f = prep(future, s);
-    f.fillStyle = accent;
-    const fill = (lo, hi, alpha) => {
-      f.globalAlpha = alpha;
-      f.beginPath();
-      for (let i = 0; i < lo.length; i++) f.lineTo(X(tAt(iNow + i)), Y(hi[i]));
-      for (let i = lo.length - 1; i >= 0; i--) f.lineTo(X(tAt(iNow + i)), Y(lo[i]));
-      f.closePath();
-      f.fill();
-    };
-    fill(bands[0], bands[4], 0.07);
-    fill(bands[1], bands[3], 0.09);
-    f.strokeStyle = ink;
-    f.lineWidth = 0.7;
-    f.globalAlpha = 0.09;
-    for (const a of fan) {
-      f.beginPath();
-      for (let i = 0; i < a.length; i++) f.lineTo(X(tAt(iNow + i)), Y(a[i]));
-      f.stroke();
-    }
-    f.globalAlpha = 0.9;
-    f.strokeStyle = accent;
-    f.setLineDash([3, 5]);
-    f.lineWidth = 1.2;
-    f.beginPath();
-    for (let i = 0; i < bands[2].length; i++) f.lineTo(X(tAt(iNow + i)), Y(bands[2][i]));
-    f.stroke();
   }
 
   /* ---------- frame ---------- */
@@ -281,20 +342,34 @@ export function lifePaths({ section, canvas, timelineRoot, hud, replayBtn, miles
   let hold = 0, nextMs = 0;
 
   /** The life line plays itself: steady through the years, a beat on each
-   *  milestone (so its card can pop), a longer one at "now", then the future. */
+   *  milestone (so its card can pop), and it stops at "now". */
   function advanceLife(dt) {
+    if (openK >= 0) return; // reading a card
     if (hold > 0) { hold -= dt; return; }
-    const v = cursor < now ? LIFE_SPEED : FUTURE_SPEED;
-    let next = cursor + v * dt;
+    if (cursor >= now) return;
+    let next = Math.min(now, cursor + LIFE_SPEED * dt);
     if (nextMs < milestones.length && next >= milestones[nextMs].t) {
       next = milestones[nextMs].t;
       hold = milestones[nextMs].t >= now ? NOW_HOLD : MS_HOLD;
       nextMs++;
     }
-    cursor = Math.min(T1, next);
+    cursor = next;
+  }
+  const done = () => readyAt !== null && cursor >= now && hold <= 0;
+
+  /** Jump to the end state: everything sampled, my path drawn up to now. */
+  function finish() {
+    if (done()) return;
+    const t = performance.now() / 1000;
+    cued = true;
+    if (genStart === null) genStart = t;
+    if (cloudCtx) while (baked < nPaths) bake(baked++);
+    if (readyAt === null) readyAt = t - 1;
+    cursor = now; hold = 0; nextMs = milestones.length;
   }
 
   function replay() {
+    closeCard(true);
     baked = 0;
     cloudCtx?.clearRect(0, 0, view.w, view.h);
     genStart = performance.now() / 1000;
@@ -372,7 +447,7 @@ export function lifePaths({ section, canvas, timelineRoot, hud, replayBtn, miles
 
     if (gt < 0) setText(hud.sample, 'awaiting t₀');
     else if (!ready) setText(hud.sample, `sampling ${count.toLocaleString('en')} / ${nPaths.toLocaleString('en')}`);
-    else setText(hud.sample, cursor > now + 0.05 ? `path #${ME} → ${nFan} futures` : `path #${ME} of ${nPaths.toLocaleString('en')}`);
+    else setText(hud.sample, done() ? `path #${ME} · now ↓ sample the future` : `path #${ME} of ${nPaths.toLocaleString('en')}`);
 
     // Now line.
     ctx.globalAlpha = 0.5;
@@ -381,20 +456,6 @@ export function lifePaths({ section, canvas, timelineRoot, hud, replayBtn, miles
     ctx.globalAlpha = 0.7;
     ctx.textAlign = 'left';
     ctx.fillText('now', xn + 6, box.t);
-
-    // Future fan.
-    if (cursor > now) {
-      ctx.globalAlpha = 1;
-      clipX(ctx, xn, xc, () => ctx.drawImage(future, 0, 0, w, h));
-      if (cursor > now + 1.5) {
-        ctx.globalAlpha = invLerp(now + 1.5, now + 3, cursor) * 0.7;
-        ctx.fillStyle = ink;
-        const yb = Y(bands[4][bands[4].length - 1]);
-        ctx.textAlign = 'right';
-        ctx.fillText('p95', box.r - 4, yb - 14);
-        ctx.fillText('p5', box.r - 4, Y(bands[0][bands[0].length - 1]) + 4);
-      }
-    }
 
     const ic = Math.min(iNow, Math.max(0, Math.round((cursor - T0) / DT)));
     if (ready) {
@@ -441,15 +502,24 @@ export function lifePaths({ section, canvas, timelineRoot, hud, replayBtn, miles
       }
     });
 
-    if (cursor > now + 0.6) setText(caption, OUTRO);
+    if (done()) setText(caption, OUTRO);
     else if (active >= 0) {
       const m = milestones[active];
       setText(caption, [m.when, m.where, m.note].filter(Boolean).join('  ·  '));
     } else setText(caption, INTRO);
 
-    // Head of my path (it stops at "now"; the fan carries on without it).
+    // Head of my path (it stops at "now"; the futures sprout from here).
     if (ready) {
       const xh = Math.min(xc, xn), yh = Y(me[ic]);
+      if (done()) {
+        const pulse = (time * 0.7) % 1;
+        ctx.strokeStyle = accent;
+        ctx.lineWidth = 1.2;
+        ctx.globalAlpha = (1 - pulse) * 0.7;
+        ctx.beginPath();
+        ctx.arc(xh, yh, 5 + pulse * 16, 0, Math.PI * 2);
+        ctx.stroke();
+      }
       ctx.globalAlpha = 1;
       ctx.fillStyle = accent;
       ctx.beginPath();
@@ -492,5 +562,11 @@ export function lifePaths({ section, canvas, timelineRoot, hud, replayBtn, miles
     takeControl: () => { external = true; },
     /** Start generating (once started, the ensemble stays). */
     cue: (on) => { if (on) cued = true; },
+    /** My path at "now", in canvas px: where the futures sprout. */
+    nowPoint: () => (box ? [X(now), Y(me[iNow])] : null),
+    /** Pixels per year and per unit of X, so futures can start out in the plot's own scale. */
+    scale: () => (box ? { year: X(T0 + 1) - X(T0), unit: Y(0) - Y(1), right: box.r } : null),
+    done,
+    finish,
   };
 }

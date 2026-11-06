@@ -21,8 +21,31 @@
   font: 400 clamp(64px, 14vw, 220px) / 0.95 var(--serif);
   letter-spacing: -0.01em;
 }
-.js .hero-name { position: absolute !important; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
-.js .hero.no-canvas .hero-name { width: auto; height: auto; overflow: visible; clip: auto; white-space: normal; }
+/* With the canvas, the monogram JPT is drawn above and the full name is set
+   beneath it, at the spot the Fourier layout reports (--name-top). */
+.js .hero-name { opacity: 0; }
+.js .hero.has-canvas .hero-name {
+  top: calc(var(--name-top, 60vh) + clamp(10px, 1.6vh, 22px));
+  left: 50%;
+  right: auto;
+  transform: translateX(-50%);
+  font: 400 clamp(24px, 3.1vw, 46px) / 1.05 var(--serif);
+  letter-spacing: 0;
+  white-space: nowrap;
+  opacity: 1;
+  transition: opacity 0.6s var(--ease-io) 0.2s;
+}
+.js .hero.has-canvas .hero-name::before,
+.js .hero.has-canvas .hero-name::after {
+  content: '';
+  display: inline-block;
+  width: 0.9em;
+  height: 1px;
+  margin: 0 0.35em;
+  vertical-align: 0.3em;
+  background: var(--accent);
+}
+.js .hero.no-canvas .hero-name { opacity: 1; }
 
 .hero-foot {
   position: absolute;
@@ -205,20 +228,82 @@
 }
 .ms-card.is-active { border-color: var(--accent); box-shadow: 0 10px 22px -14px rgba(255, 77, 31, 0.6); }
 .ms-card:hover { border-color: var(--ink-3); z-index: 99 !important; }
-.ms-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; min-height: 18px; }
+.ms-head { display: flex; align-items: center; gap: 8px; min-height: 20px; }
 .ms-when { font: 500 11px/1 var(--mono); color: var(--accent); letter-spacing: 0.04em; white-space: nowrap; }
-.ms-org {
-  display: inline-grid;
-  place-items: center;
-  height: 18px;
-  padding: 0 6px;
-  border-radius: 5px;
-  background: var(--org, var(--ink));
-  color: #fff;
-  font: 600 9.5px/1 var(--sans);
-  letter-spacing: 0.06em;
+.ms-logo { height: 20px; width: auto; max-width: 64px; object-fit: contain; border-radius: 4px; flex: none; }
+.ms-card.is-on { cursor: pointer; }
+.ms-card:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.ms-card.is-lifted { visibility: hidden; }
+.ms-more {
+  position: absolute;
+  right: 9px;
+  bottom: 6px;
+  font: 400 14px/1 var(--mono);
+  color: var(--ink-3);
+  opacity: 0.55;
+  transition: opacity 0.2s, color 0.2s, transform 0.2s;
 }
-.ms-logo { height: 16px; width: auto; max-width: 72px; object-fit: contain; }
+.ms-card:hover .ms-more, .ms-card:focus-visible .ms-more { opacity: 1; color: var(--accent); transform: scale(1.25); }
+
+/* A card, opened: it grows from its own box into this panel. */
+.ms-scrim {
+  position: absolute;
+  inset: 0;
+  z-index: 200;
+  background: color-mix(in srgb, var(--paper) 60%, transparent);
+  backdrop-filter: blur(3px);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s var(--ease-io);
+}
+.ms-scrim.is-on { opacity: 1; pointer-events: auto; }
+.ms-detail {
+  position: absolute;
+  z-index: 201;
+  display: none;
+  transform-origin: 0 0;
+  overflow: auto;
+  overscroll-behavior: contain;
+  background: var(--paper);
+  border: 1px solid var(--accent);
+  border-radius: 16px;
+  box-shadow: 0 30px 70px -34px rgba(18, 18, 18, 0.5);
+  outline: none;
+}
+.ms-detail.is-open { display: block; }
+.ms-d-inner { position: relative; display: grid; gap: 10px; padding: 22px 26px 24px; opacity: 0; transition: opacity 0.25s; }
+.ms-detail.is-ready .ms-d-inner { opacity: 1; }
+.ms-close {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  width: 32px;
+  height: 32px;
+  border: 1px solid var(--rule);
+  border-radius: 50%;
+  background: var(--paper);
+  color: var(--ink-2);
+  font: 400 20px/1 var(--sans);
+  cursor: pointer;
+  transition: border-color 0.2s, color 0.2s;
+}
+.ms-close:hover, .ms-close:focus-visible { border-color: var(--accent); color: var(--accent); }
+.ms-d-head { display: flex; align-items: center; gap: 14px; min-height: 34px; padding-right: 44px; }
+.ms-d-head .ms-when { font-size: 12px; }
+.ms-d-org { display: inline-flex; }
+.ms-d-logo { height: 34px; width: auto; max-width: 240px; object-fit: contain; border-radius: 6px; }
+.ms-d-title { font: 400 clamp(26px, 2.6vw, 34px) / 1.05 var(--serif); letter-spacing: -0.01em; text-wrap: balance; }
+.ms-d-where { font: 400 12px/1.4 var(--mono); color: var(--ink-3); }
+.ms-d-body { display: grid; gap: 20px; margin-top: 6px; }
+.ms-d-body.has-image { grid-template-columns: minmax(0, 1fr) 210px; align-items: start; }
+.ms-d-text { display: grid; gap: 12px; }
+.ms-d-summary { font: 400 15.5px/1.55 var(--sans); color: var(--ink); text-wrap: pretty; }
+.ms-d-points { list-style: none; padding: 0; margin: 0; display: grid; gap: 8px; }
+.ms-d-points li { position: relative; padding-left: 18px; font: 400 14px/1.5 var(--sans); color: var(--ink-2); text-wrap: pretty; }
+.ms-d-points li::before { content: ''; position: absolute; left: 0; top: 0.72em; width: 9px; height: 1px; background: var(--accent); }
+.ms-d-figure { margin: 0; }
+.ms-d-figure img { display: block; width: 100%; aspect-ratio: 4 / 3; object-fit: cover; border-radius: 10px; border: 1px solid var(--rule); }
+.ms-d-links { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 6px; }
 .ms-where {
   font: 400 11.5px/1.3 var(--sans);
   color: var(--ink-3);
@@ -240,13 +325,17 @@
   .ms-card { padding: 8px 9px 9px; gap: 4px; }
   .ms-title { font-size: 12px; line-height: 1.28; }
   .ms-where { font-size: 10.5px; }
-  .ms-org { height: 16px; font-size: 8.5px; padding: 0 5px; }
+  .ms-logo { height: 16px; max-width: 52px; }
+  .ms-d-inner { padding: 18px 18px 20px; }
+  .ms-d-body.has-image { grid-template-columns: 1fr; }
+  .ms-d-figure { order: -1; }
+  .ms-d-logo { height: 28px; max-width: 190px; }
   .ms-caption { white-space: normal; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; min-height: 3em; font-size: 11px; }
 }
 
 /* Interlude between the Monte Carlo and model chapters. */
 .descent {
-  height: 70vh;
+  height: 40vh;
   display: grid;
   place-items: center;
   background: var(--paper);
@@ -258,7 +347,7 @@
 /* =============================================================== */
 /* 03 · Inside the model                                            */
 /* =============================================================== */
-.model { position: relative; height: 760vh; background: var(--paper); color: var(--ink); --intro: 1; --outro: 0; }
+.model { position: relative; height: 830vh; /* 70vh of it is the arrival hold (MODEL_HOLD in main.js) */ background: var(--paper); color: var(--ink); --intro: 1; --outro: 0; }
 .model-sticky { position: sticky; top: 0; height: 100vh; height: 100svh; overflow: hidden; }
 .model-sticky canvas { position: absolute; inset: 0; width: 100%; height: 100%; }
 .model .eyebrow, .card .eyebrow, .next .eyebrow, .model .label, .card .label, .next .label { color: var(--ink-3); }

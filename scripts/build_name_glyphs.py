@@ -22,7 +22,7 @@ from pathlib import Path
 from fontTools.pens.basePen import BasePen
 from fontTools.ttLib import TTFont
 
-WORDS = ["Javier", "Perez", "Tobia"]
+WORDS = ["JPT"]  # the monogram; the full name is set as text beneath it
 OUT = Path(__file__).resolve().parent.parent / "assets" / "data" / "name-glyphs.json"
 FLATNESS = 6.0  # target segment length in font units when flattening curves
 

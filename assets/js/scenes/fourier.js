@@ -1,5 +1,5 @@
 /**
- * §01 · Analysis: the name as a Fourier series.
+ * §01 · Analysis: the monogram JPT as a Fourier series.
  *
  * The outline of every glyph is stitched into one closed curve f(θ) in the
  * complex plane, sampled at N points and transformed with an FFT. On load we
@@ -25,11 +25,27 @@ const PLAY_END = STAGES.reduce((s, x) => s + x.dur, 0);
 const FINAL_K = STAGES[STAGES.length - 1].k;
 const FILL_IN = 0.9; // seconds for the solid name to fade in after the last stage
 const TRACE_PERIOD = 12; // seconds per lap of the pen once at rest
+const TOPBAR = 64; // px, matches --topbar
 const CIRCLES = 160; // epicycles drawn; the remaining terms are sub-pixel
 
 const fillFor = (k) => smooth(invLerp(9, 13, Math.log2(k + 1)));
 
-export function fourierName({ canvas, glyphs, readout, slider, replay, onConverged }) {
+/** Ink bounds of all words laid out on one line, in em: [x0, y0, x1, y1]. */
+function bounds(words, space) {
+  let x0 = Infinity, y0 = Infinity, x1 = -Infinity, y1 = -Infinity, dx = 0;
+  for (const wd of words) {
+    for (const c of wd.contours) {
+      for (let i = 0; i < c.length; i += 2) {
+        x0 = Math.min(x0, c[i] + dx); x1 = Math.max(x1, c[i] + dx);
+        y0 = Math.min(y0, c[i + 1]); y1 = Math.max(y1, c[i + 1]);
+      }
+    }
+    dx += wd.width + space;
+  }
+  return [x0, y0, x1, y1];
+}
+
+export function fourierName({ canvas, glyphs, readout, slider, replay, onConverged, onLayout }) {
   const ink = cssVar('--ink') || '#121212';
   const accent = cssVar('--accent') || '#ff4d1f';
 
@@ -53,33 +69,31 @@ export function fourierName({ canvas, glyphs, readout, slider, replay, onConverg
   function build(state) {
     const { w, h } = state;
     if (!w || !h) return;
+    // One line, set as large as the hero allows: the monogram fills the upper
+    // half, the full name is set as text beneath it (see onLayout).
     const pad = clamp(w * 0.04, 20, 56);
-    const wide = w >= 760 && w / h > 0.95;
-    const lines = wide ? [glyphs.words] : [[glyphs.words[0]], glyphs.words.slice(1)];
-    const lineWidth = (ws) => ws.reduce((s, wd) => s + wd.width, 0) + glyphs.space * (ws.length - 1);
-    const maxEm = Math.max(...lines.map(lineWidth));
-    const rail = w > 980 ? 40 : 0; // room for the progress rail on the right
-    const size = Math.min((w - pad * 2 - rail) / maxEm, h * (wide ? 0.3 : 0.17));
-    const gap = size * 0.98;
-    const blockH = glyphs.capHeight * size + gap * (lines.length - 1);
-    let baseline = h * (wide ? 0.43 : 0.36) - blockH / 2 + glyphs.capHeight * size;
+    const rail = w > 980 ? 80 : 0; // keep clear of the progress rail on the right
+    const [x0, y0, x1, y1] = bounds(glyphs.words, glyphs.space);
+    const narrow = w < 700;
+    const top = TOPBAR + (narrow ? 62 : clamp(h * 0.09, 64, 96)); // clear of the eyebrow
+    const size = Math.min((w - pad * 2 - rail) / (x1 - x0), (h * (narrow ? 0.27 : 0.46)) / (y1 - y0));
+    const left = (w - (x1 - x0) * size) / 2 - x0 * size; // centred
+    const baseline = top - y0 * size;
 
     const contours = [];
-    for (const ws of lines) {
-      let x = pad;
-      for (const wd of ws) {
-        for (const c of wd.contours) {
-          const pts = new Float64Array(c.length);
-          for (let i = 0; i < c.length; i += 2) {
-            pts[i] = x + c[i] * size;
-            pts[i + 1] = baseline + c[i + 1] * size;
-          }
-          contours.push(pts);
+    let x = left;
+    for (const wd of glyphs.words) {
+      for (const c of wd.contours) {
+        const pts = new Float64Array(c.length);
+        for (let i = 0; i < c.length; i += 2) {
+          pts[i] = x + c[i] * size;
+          pts[i + 1] = baseline + c[i + 1] * size;
         }
-        x += (wd.width + glyphs.space) * size;
+        contours.push(pts);
       }
-      baseline += gap;
+      x += (wd.width + glyphs.space) * size;
     }
+    onLayout?.({ cx: w / 2, top, bottom: baseline + y1 * size, width: (x1 - x0) * size, size });
 
     glyphPath = new Path2D();
     for (const c of contours) {
