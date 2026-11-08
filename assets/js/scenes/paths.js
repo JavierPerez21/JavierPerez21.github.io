@@ -13,7 +13,7 @@ import { rng } from '../lib/rng.js';
 import { clamp, cssVar, el, hidpi, invLerp, isCoarse, lerp, smooth, visibleLoop } from '../lib/util.js';
 
 const T0 = 2015.75;
-const T1 = 2031.5;
+const T1 = 2029.5;
 const DT = 1 / 12;
 const MU = 0.5;
 const SIGMA = 1.0;
@@ -30,7 +30,7 @@ export function lifePaths({ section, canvas, timelineRoot, hud, replayBtn, miles
   const accent = cssVar('--accent') || '#ff4d1f';
   const paper = cssVar('--paper') || '#f3f1eb';
   const mono = cssVar('--mono') || 'monospace';
-  const setText = (node, txt) => { if (node.textContent !== txt) node.textContent = txt; };
+  const setText = (node, txt) => { if (node && node.textContent !== txt) node.textContent = txt; };
   const nPaths = isCoarse() || window.innerWidth < 700 ? 900 : 2048;
   const iNow = Math.round((now - T0) / DT);
   const tAt = (i) => T0 + i * DT;
@@ -62,10 +62,10 @@ export function lifePaths({ section, canvas, timelineRoot, hud, replayBtn, miles
     }
   }
 
-  // Headroom for the futures that sprout from "now" (their p95 at T1).
+  // Headroom for the futures that sprout from "now" (about their p85 at T1).
   const last = Float32Array.from(ensemble, (a) => a[iNow]).sort();
   const yLo = Math.min(last[Math.floor(nPaths * 0.004)], -1) - 0.6;
-  const yHi = me[iNow] + MU * (T1 - now) + 1.645 * SIGMA * Math.sqrt(T1 - now) + 1.2;
+  const yHi = me[iNow] + MU * (T1 - now) + 1.0 * SIGMA * Math.sqrt(T1 - now) + 0.6;
 
   /* ---------- generation schedule ---------- */
   const appearAt = (k) => GEN_TAU * Math.log(k + 2);
@@ -76,8 +76,7 @@ export function lifePaths({ section, canvas, timelineRoot, hud, replayBtn, miles
   /** The organisation's mark, small, for the corner of a card. */
   const orgBadge = (o) => (o?.icon ? el('img.ms-logo', { src: o.icon, alt: o.name, title: o.name, draggable: 'false' }) : null);
 
-  const INTRO = `${nPaths.toLocaleString('en')} trajectories, simulated from the same starting point. One of them is mine.`;
-  const OUTRO = 'The probability of this exact path was zero. And yet, here we are. Scroll on to sample what comes next.';
+  const INTRO = `${nPaths.toLocaleString('en')} random walks from the same starting point. The orange one is mine.`;
   const caption = el('p.ms-caption', {}, INTRO);
   const leaders = document.createElementNS(SVG, 'svg');
   leaders.setAttribute('class', 'ms-leaders');
@@ -93,7 +92,6 @@ export function lifePaths({ section, canvas, timelineRoot, hud, replayBtn, miles
     },
     el('span.ms-head', {}, orgBadge(orgs[m.org]), el('span.ms-when', {}, m.when)), // logo left: fanned cards cover each other's right edge
     el('span.ms-title', {}, m.title),
-    m.where ? el('span.ms-where', {}, m.where) : null,
     m.detail ? el('span.ms-more', { 'aria-hidden': 'true' }, '+') : null));
   const band = el('div.ms-band', {}, leaders, el('ol.ms-cards', { 'aria-label': 'Milestones' }, cards));
   timelineRoot.append(caption, band);
@@ -121,6 +119,7 @@ export function lifePaths({ section, canvas, timelineRoot, hud, replayBtn, miles
       el(`div.ms-d-body${d.image ? '.has-image' : ''}`, {},
         el('div.ms-d-text', {},
           el('p.ms-d-summary', {}, d.summary),
+          d.points?.length ? el('p.ms-d-label', {}, 'Highlights') : null,
           d.points?.length ? el('ul.ms-d-points', {}, d.points.map((t) => el('li', {}, t))) : null),
         d.image ? el('figure.ms-d-figure', {}, el('img', { src: d.image, alt: '', loading: 'lazy' })) : null),
       d.links?.length
@@ -214,10 +213,11 @@ export function lifePaths({ section, canvas, timelineRoot, hud, replayBtn, miles
     const W = band.clientWidth;
     if (!W || !box) return;
     const narrow = W < 640;
-    const rows = narrow || window.innerHeight >= 760 ? 3 : 2; // very short screens: fan more, keep the plot tall
-    const gap = narrow ? 8 : 12;
+    const rows = narrow || window.innerHeight >= 680 ? 3 : 2; // very short screens: fan more, keep the plot tall
+    const gap = narrow ? 8 : 18;
     const perRow = Math.ceil(milestones.length / rows);
-    const cw = narrow ? 140 : clamp((W - gap * (perRow - 1)) / (perRow + 0.4), 180, 250);
+    // Narrow enough that a row fits side by side, with room to start near its first year.
+    const cw = narrow ? 140 : clamp((W - gap * (perRow - 1)) / (perRow + 0.8), 168, 240);
     cards.forEach((c) => { c.style.width = `${cw}px`; c.style.height = ''; });
     const ch = Math.max(...cards.map((c) => c.offsetHeight)) || 90;
     cards.forEach((c) => { c.style.height = `${ch}px`; });
@@ -502,7 +502,7 @@ export function lifePaths({ section, canvas, timelineRoot, hud, replayBtn, miles
       }
     });
 
-    if (done()) setText(caption, OUTRO);
+    if (done()) setText(caption, '');
     else if (active >= 0) {
       const m = milestones[active];
       setText(caption, [m.when, m.where, m.note].filter(Boolean).join('  ·  '));

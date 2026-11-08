@@ -31,7 +31,7 @@ export function samplesToNeurons({ paths, pathsSection, plotCanvas, model, model
   const view = hidpi(canvas, () => {});
 
   /* ---------- the futures ---------- */
-  const n = isCoarse() || window.innerWidth < 700 ? 130 : 220;
+  const n = isCoarse() || window.innerWidth < 700 ? 40 : 64;
   const rand = rng(20261106);
   const futures = Array.from({ length: n }, (_, k) => {
     // W(τ) on [0, 1] (scaled to years later) for the stretch in the plot. On
@@ -53,7 +53,7 @@ export function samplesToNeurons({ paths, pathsSection, plotCanvas, model, model
       at: 0.5 * Math.log(1 + k) / Math.log(1 + n),
       dur: lerp(0.34, 0.2, k / n),
       bend: rand.range(0.25, 0.6), // where along the path it gives up on the plot
-      target: k === 0 ? 0 : (k * 7 + 3),
+      target: k < 16 ? k : k * 37, // the first ones land on the skill tokens (listed first), the rest scatter
     };
   });
   const pts = new Float32Array((M + 1) * 2);
@@ -85,7 +85,7 @@ export function samplesToNeurons({ paths, pathsSection, plotCanvas, model, model
     // Scrolling on means "skip to now" if the life line is still playing.
     if (armed) { armed = false; paths.finish(); }
     const zoom = model.zoom();
-    if (zoom.k > 3.4 || !paths.done()) { clear(); return; }
+    if (zoom.k > 3 || !paths.done()) { clear(); return; }
 
     const np = paths.nowPoint(), sc = paths.scale();
     if (!np || !sc) return;
@@ -97,8 +97,8 @@ export function samplesToNeurons({ paths, pathsSection, plotCanvas, model, model
     const fallback = [mr.left + mr.width / 2, mr.top + mr.height / 2];
     // Fly-in: everything scales about the centre of the input layer.
     const Z = zoom.k, zx = mr.left + zoom.cx, zy = mr.top + zoom.cy;
-    const fade = 1 - smooth(invLerp(1.5, 3.4, Z)); // gone before L0 is in focus (Z ≈ 3.9)
-    const thick = Math.sqrt(Math.min(Z, 6));
+    const fade = 1 - smooth(invLerp(1.15, 3, Z)); // gone before L0 is in focus (Z ≈ 3.9)
+    const thick = Math.sqrt(Math.min(Z, 2.5));
 
     const { ctx, w, h } = view;
     ctx.clearRect(0, 0, w, h);
@@ -135,9 +135,12 @@ export function samplesToNeurons({ paths, pathsSection, plotCanvas, model, model
         pts[j * 2 + 1] = zy + (lerp(ay, by, g) - zy) * Z;
       }
 
+      // Once landed, a path hands over to its neuron: it thins out, and its
+      // head fades into the network's own dot.
+      const after = smooth(clamp((e - f.at - f.dur) / 0.14));
       const lead = k < 6;
       ctx.strokeStyle = k === 0 ? accent : ink;
-      ctx.globalAlpha = fade * (k === 0 ? 0.95 : lead ? 0.55 : 0.16);
+      ctx.globalAlpha = fade * (k === 0 ? 0.95 : lead ? 0.6 : 0.3) * (1 - after * (k === 0 ? 0.3 : 0.55));
       ctx.lineWidth = (k === 0 ? 2 : lead ? 1.1 : 0.75) * thick;
       ctx.beginPath();
       ctx.moveTo(pts[0], pts[1]);
@@ -147,15 +150,16 @@ export function samplesToNeurons({ paths, pathsSection, plotCanvas, model, model
       }
       ctx.lineTo(pts[last * 2], pts[last * 2 + 1]);
       ctx.stroke();
-      heads.push([pts[last * 2], pts[last * 2 + 1], k, u >= 1, tg?.[2]]);
+      heads.push([pts[last * 2], pts[last * 2 + 1], k, u >= 1, tg?.[2], after]);
     }
 
     // Heads in flight; on arrival each one lights its neuron.
-    for (const [x, y, k, landed, col] of heads) {
+    for (const [x, y, k, landed, col, after] of heads) {
       if (x < -20 || y < -20 || x > w + 20 || y > h + 20) continue;
       if (landed) {
+        if (after >= 1 && k !== 0) continue; // handed over to the network
         const pulse = (time / 1000 * 0.9 + k * 0.137) % 1;
-        ctx.globalAlpha = fade * 0.9;
+        ctx.globalAlpha = fade * 0.9 * (1 - after * (k === 0 ? 0.4 : 1));
         ctx.fillStyle = k === 0 ? accent : col || accent;
         ctx.beginPath();
         ctx.arc(x, y, (k === 0 ? 4 : 2.4) * thick, 0, Math.PI * 2);
@@ -163,7 +167,7 @@ export function samplesToNeurons({ paths, pathsSection, plotCanvas, model, model
         if (k < 6) {
           ctx.strokeStyle = accent;
           ctx.lineWidth = 1;
-          ctx.globalAlpha = fade * (1 - pulse) * 0.6;
+          ctx.globalAlpha = fade * (1 - pulse) * 0.6 * (1 - after);
           ctx.beginPath();
           ctx.arc(x, y, (4 + pulse * 12) * thick, 0, Math.PI * 2);
           ctx.stroke();

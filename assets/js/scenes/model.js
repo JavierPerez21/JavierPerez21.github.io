@@ -36,7 +36,7 @@ export function insideModel({ section, canvas, labelsRoot, hud, layers, tokens, 
           v: lerp(-1.4, 1.4, (j + 0.5 + rand.range(-0.4, 0.4)) / rows),
           ph: rand() * Math.PI * 2,
           fr: rand.range(0.5, 1.8),
-          base: rand.range(0.12, 0.42),
+          base: rand.range(0.24, 0.6),
           born: rand(), // when it appears as the network is built
         });
       }
@@ -84,19 +84,23 @@ export function insideModel({ section, canvas, labelsRoot, hud, layers, tokens, 
         kind: 'item',
         item: n.data,
         layer: layers[n.k],
-        nid: `L${n.k} · ${n.nid}`,
+        nid: ref(n),
         related: (n.data.tags || []).map((t) => tokenNeuron[t]).filter(Boolean)
           .map((m) => ({ label: m.data.label, group: m.data.group, open: () => onOpen(payloadFor(m)) })),
       });
+  // Labels as the menu shows them: "02 · Industry" for a layer, "02.3" for its third project.
+  const num = (k) => String(k + 1).padStart(2, '0');
+  const ref = (n) => `${num(n.k)}.${planes[n.k].named.indexOf(n) + 1}`;
   for (const P of planes) {
     for (const n of P.named) {
       const isTok = n.kind === 'token';
       const inner = isTok
         ? el('span.neuron-inner', {}, el('span.neuron-title', {}, n.data.label))
         : el('span.neuron-inner', {},
-            el('span.neuron-id', {}, `L${P.k} · ${n.nid}`),
+            el('span.neuron-id', {}, ref(n)),
             el('span.neuron-title', {}, n.data.title),
-            el('span.neuron-tag', {}, n.data.tag));
+            n.data.summary ? el('span.neuron-sum', {}, n.data.summary) : null,
+            el('span.neuron-tag', {}, n.data.tag, el('span.neuron-open', { 'aria-hidden': 'true' }, 'read ›')));
       n.el = el(`button.neuron${isTok ? '.neuron--token' : ''}`, {
         type: 'button',
         tabindex: '-1',
@@ -113,14 +117,21 @@ export function insideModel({ section, canvas, labelsRoot, hud, layers, tokens, 
   }
 
   /* ---------- layout ---------- */
-  let X = XW, Y = XW, fl = 1, cx = 0, cy = 0, portrait = false, pxU = 1;
+  // In landscape the layer menu takes a column on the left and the network
+  // is centred in the rest of the screen (ew wide); in portrait the menu is a
+  // strip across the top.
+  let X = XW, Y = XW, fl = 1, cx = 0, cy = 0, portrait = false, pxU = 1, ew = 1;
   const view = hidpi(canvas, (s) => {
     portrait = s.h > s.w * 1.1 || s.w < 720;
-    pxU = 0.92 * (s.w / 2); // screen px per unit of u, for a layer in focus
+    const side = portrait ? 0 : Math.round(clamp(s.w * 0.26, 320, 420));
+    section.classList.toggle('is-portrait', portrait);
+    section.style.setProperty('--side', `${side}px`);
+    ew = s.w - side;
+    pxU = 0.92 * (ew / 2); // screen px per unit of u, for a layer in focus
     X = XW;
-    Y = XW * (s.h / s.w);
-    fl = 0.92 * (s.w / 2) * (F / XW);
-    cx = s.w / 2;
+    Y = XW * (s.h / ew);
+    fl = 0.92 * (ew / 2) * (F / XW);
+    cx = side + ew / 2;
     cy = s.h / 2;
     layout();
   });
@@ -133,11 +144,11 @@ export function insideModel({ section, canvas, labelsRoot, hud, layers, tokens, 
       if (P.layer.kind === 'tokens') {
         const groups = Object.keys(skillGroups);
         const centers = portrait
-          ? groups.map((_, i) => [-0.2, lerp(-0.42, 0.6, i / (groups.length - 1))])
-          : [[-0.5, -0.44], [0.42, -0.46], [-0.48, 0.34], [0.42, 0.36]];
+          ? groups.map((_, i) => [-0.2, lerp(-0.2, 0.7, i / (groups.length - 1))])
+          : [[-0.42, -0.36], [0.4, -0.36], [-0.42, 0.38], [0.4, 0.38]];
         groups.forEach((g, gi) => {
           const members = named.filter((m) => m.data.group === g);
-          const perRow = portrait ? 2 : Math.ceil(members.length / 2);
+          const perRow = portrait || ew < 1000 ? 2 : Math.ceil(members.length / 2); // two to a row where the clusters are close
           const rowsN = Math.ceil(members.length / perRow);
           // Width of dot + gap + chip, measured from the DOM, in u units.
           const span = (m) => (m.el.firstChild.offsetWidth + 30) / pxU;
@@ -158,21 +169,22 @@ export function insideModel({ section, canvas, labelsRoot, hud, layers, tokens, 
         if (portrait) {
           named.forEach((m, j) => {
             m.u = j % 2 ? -0.32 : -0.82;
-            m.v = lerp(-0.34, 0.7, n === 1 ? 0.5 : j / (n - 1));
+            m.v = lerp(-0.12, n > 6 ? 0.8 : 0.74, n === 1 ? 0.5 : j / (n - 1));
             m.left = false;
           });
         } else {
-          // Rows of labels (dot on the left, card to its right), centred on screen.
-          const top = Math.ceil(n / 2);
-          const labelU = 260 / pxU;
-          const span = Math.max(0.6, (260 + 44) / pxU);
+          // Rows of labels (dot on the left, card to its right), centred in
+          // the network's part of the screen: three to a row where they fit.
+          const CARD = 290, GAP = 40;
+          const perRow = clamp(Math.floor((ew - 60 + GAP) / (CARD + GAP)), 2, 3);
+          const rowsN = Math.ceil(n / perRow);
+          const span = (CARD + GAP) / pxU;
           named.forEach((m, j) => {
-            const row = j < top ? 0 : 1;
-            const idx = row ? j - top : j;
-            const cnt = row ? n - top : top;
-            const width = (cnt - 1) * span + labelU;
-            m.u = -width / 2 + idx * span + (row ? 1 : -1) * span * 0.09;
-            m.v = row ? 0.2 : -0.36;
+            const row = Math.floor(j / perRow), idx = j % perRow;
+            const cnt = Math.min(perRow, n - row * perRow);
+            const width = (cnt - 1) * span + CARD / pxU;
+            m.u = -width / 2 + idx * span + (row % 2 ? 1 : -1) * span * 0.06;
+            m.v = (row - (rowsN - 1) / 2) * (rowsN > 2 ? Math.min(0.48, 1.3 / (rowsN - 1)) : 0.56);
             m.left = false;
           });
         }
@@ -193,7 +205,9 @@ export function insideModel({ section, canvas, labelsRoot, hud, layers, tokens, 
   };
 
   /* ---------- camera ---------- */
-  const Zs = -F - 1.7 * D;
+  // The camera starts with the input layer already in focus: §02's futures
+  // land straight on it, and the scroll then carries you deeper.
+  const Zs = -F;
   const Zk = (k) => k * D - F;
   const Ze = (L - 1) * D + 0.5 * D;
   const cam = { x: 0, y: 0, z: Zs };
@@ -206,8 +220,7 @@ export function insideModel({ section, canvas, labelsRoot, hud, layers, tokens, 
   }
 
   function targetZ(p) {
-    const s = p * (L + 1);
-    if (s < 1) return lerp(Zs, Zk(0), smoother(invLerp(0.05, 1, s))); // fly in straight after the arrival hold
+    const s = 1 + p * L;
     const k = Math.min(L - 1, Math.floor(s - 1));
     const f = s - 1 - k;
     return lerp(Zk(k), k === L - 1 ? Ze : Zk(k + 1), smoother(invLerp(0.55, 1, f)));
@@ -232,16 +245,19 @@ export function insideModel({ section, canvas, labelsRoot, hud, layers, tokens, 
     if (k === shownLayer) return;
     shownLayer = k;
     section.classList.toggle('is-deep', k >= 0);
-    hud.rail.forEach((r, i) => r.classList.toggle('on', i === k));
-    if (k < 0) return;
+    hud.items.forEach((b, i) => {
+      b.classList.toggle('on', i === k);
+      if (i === k) b.setAttribute('aria-current', 'step'); else b.removeAttribute('aria-current');
+    });
+    if (k < 0 || !hud.detail) return;
+    // Portrait: the menu is a row of tabs, so the layer in view is spelled out beneath it.
     const layer = layers[k];
-    hud.op.textContent = `L${k} · ${layer.op}`;
-    hud.title.textContent = layer.title;
-    hud.span.textContent = layer.span;
-    hud.blurb.textContent = layer.blurb;
-    hud.box.classList.remove('swap');
-    void hud.box.offsetWidth;
-    hud.box.classList.add('swap');
+    hud.detail.replaceChildren(
+      el('span.model-title', {}, layer.title),
+      el('span.model-blurb', {}, layer.blurb));
+    hud.detail.classList.remove('swap');
+    void hud.detail.offsetWidth;
+    hud.detail.classList.add('swap');
   }
 
   /* ---------- being built ---------- */
@@ -268,7 +284,10 @@ export function insideModel({ section, canvas, labelsRoot, hud, layers, tokens, 
     cam.z += (tz - cam.z) * ease;
     cam.x += (mouse.x * 70 + (still ? 0 : Math.sin(time * 0.21) * 24) - cam.x) * ease * 0.5;
     cam.y += (mouse.y * 45 + (still ? 0 : Math.cos(time * 0.17) * 16) - cam.y) * ease * 0.5;
-    setVar('--intro', 1 - smoother(invLerp(0.04, 0.16, p)));
+    // The chapter title shows while the futures land, then hands over to the HUD.
+    const intro = 1 - smoother(invLerp(0, hold * 0.75, raw));
+    introNow = intro;
+    setVar('--intro', intro);
     setVar('--outro', smoother(invLerp(0.93, 0.99, p)));
 
     const { ctx, w, h } = view;
@@ -282,6 +301,11 @@ export function insideModel({ section, canvas, labelsRoot, hud, layers, tokens, 
       if (d > NEAR && off < best && off < F * 0.5) { best = off; focusK = P.k; }
     }
     setHud(p > 0.96 ? -1 : focusK);
+    // While a layer is in focus, the machinery behind its content steps back.
+    const focusAmt = focusK < 0 ? 0 : clamp(1 - best / (F * 0.42));
+    calm = 1 - 0.32 * smooth(focusAmt);
+    focusLayer = focusK;
+    setVar('--focus', smooth(focusAmt));
 
     for (let k = L - 1; k >= 0; k--) {
       if (k < L - 1) drawEdges(ctx, planes[k], planes[k + 1], time);
@@ -293,36 +317,38 @@ export function insideModel({ section, canvas, labelsRoot, hud, layers, tokens, 
     placeLabels();
   }
 
+  let calm = 1, focusLayer = -1; // background dimming while a layer is read
+  let introNow = 1; // the chapter title is up: labels wait for it to clear
   const planeAlpha = (d) => clamp(invLerp(NEAR, F * 0.55, d)) * (1 - invLerp(F + D * 1.6, F + D * 3.4, d));
 
   function drawPlane(ctx, P, time) {
     const d = P.z - cam.z;
     if (d < NEAR) return;
     const bk = builtFor(P.k);
-    const alpha = planeAlpha(d) * bk;
+    const alpha = planeAlpha(d) * bk * (P.k === focusLayer ? 1 : calm);
     if (alpha <= 0.002) return;
 
     // Frame of the layer + its name.
     const c0 = project(-1.06, -1.06, P.z, A);
     const c1 = project(1.06, 1.06, P.z, B);
-    ctx.globalAlpha = alpha * 0.16;
+    ctx.globalAlpha = alpha * 0.3;
     ctx.strokeStyle = ink;
     ctx.lineWidth = 1;
     ctx.strokeRect(c0.x, c0.y, c1.x - c0.x, c1.y - c0.y);
-    ctx.globalAlpha = alpha * 0.55;
+    ctx.globalAlpha = alpha * 0.75;
     ctx.fillStyle = ink;
     ctx.font = `${Math.max(9, Math.min(13, 11 * A.s * 1.4))}px ${mono}`;
     ctx.textAlign = 'left';
     ctx.textBaseline = 'bottom';
-    ctx.fillText(`L${P.k} · ${P.layer.op}`, c0.x + 2, c0.y - 6);
+    ctx.fillText(`${num(P.k)} · ${P.layer.kicker || P.layer.op}`, c0.x + 2, c0.y - 6);
 
     // Anonymous neurons.
     for (const n of P.anon) {
       if (!project(n.u, n.v, P.z, A)) continue;
       if (A.x < -20 || A.x > view.w + 20 || A.y < -20 || A.y > view.h + 20) continue;
       const act = still ? 0 : Math.max(0, Math.sin(time * n.fr + n.ph)) ** 12;
-      const r = Math.max(0.7, 2.4 * A.s * (1 + act));
-      ctx.globalAlpha = alpha * bornAlpha(bk, n) * (n.base + act * 0.75);
+      const r = Math.max(0.9, 2.8 * A.s * (1 + act));
+      ctx.globalAlpha = alpha * bornAlpha(bk, n) * (n.base + act * 0.75) * (P.k === focusLayer ? calm * 0.6 + 0.4 : 1);
       ctx.fillStyle = act > 0.4 ? accent : ink;
       if (r < 1.6) ctx.fillRect(A.x - r, A.y - r, r * 2, r * 2);
       else { ctx.beginPath(); ctx.arc(A.x, A.y, r, 0, Math.PI * 2); ctx.fill(); }
@@ -330,9 +356,9 @@ export function insideModel({ section, canvas, labelsRoot, hud, layers, tokens, 
 
     // Token cluster captions on the embedding layer.
     if (P.layer.kind === 'tokens') {
-      const focus = clamp(1 - Math.abs(d - F) / (F * 0.42));
+      const focus = clamp(1 - Math.abs(d - F) / (F * 0.42)) * (1 - introNow);
       if (focus > 0.01) {
-        ctx.globalAlpha = alpha * focus * 0.5;
+        ctx.globalAlpha = alpha * focus * 0.9;
         ctx.font = `10.5px ${mono}`;
         ctx.textBaseline = 'bottom';
         for (const g of Object.keys(skillGroups)) {
@@ -387,8 +413,8 @@ export function insideModel({ section, canvas, labelsRoot, hud, layers, tokens, 
     const alpha = Math.min(planeAlpha(Math.max(dA, NEAR + 1)) + (dA < NEAR ? 0.6 : 0), planeAlpha(dB) + 0.25) * builtFor(Q.k);
     if (alpha <= 0.003) return;
     ctx.strokeStyle = ink;
-    ctx.lineWidth = 0.6;
-    ctx.globalAlpha = alpha * 0.07;
+    ctx.lineWidth = 0.7;
+    ctx.globalAlpha = alpha * 0.13 * calm;
     ctx.beginPath();
     for (const e of P.edges) {
       if (!edgeEnds(e.a, P.z, e.b, Q.z)) continue;
@@ -440,8 +466,8 @@ export function insideModel({ section, canvas, labelsRoot, hud, layers, tokens, 
       const v = p.e.a.v + (p.e.b.v - p.e.a.v) * p.t;
       if (!project(u, v, z, A)) continue;
       const fade = Math.sin(Math.PI * p.t);
-      ctx.globalAlpha = 0.9 * fade * clamp(planeAlpha(A.d) + 0.3) * builtFor(p.k + 1);
-      const r = Math.max(0.8, 2.2 * A.s);
+      ctx.globalAlpha = fade * clamp(planeAlpha(A.d) + 0.4) * builtFor(p.k + 1) * calm;
+      const r = Math.max(1, 2.6 * A.s);
       ctx.beginPath();
       ctx.arc(A.x, A.y, r, 0, Math.PI * 2);
       ctx.fill();
@@ -460,7 +486,7 @@ export function insideModel({ section, canvas, labelsRoot, hud, layers, tokens, 
         }
         if (!n.vis) { n.el.classList.add('is-vis'); n.vis = true; }
         n.el.style.transform = `translate3d(${pr.x.toFixed(1)}px, ${pr.y.toFixed(1)}px, 0)`;
-        n.el.style.opacity = String(Math.min(1, focus * 1.4));
+        n.el.style.opacity = String(Math.min(1, focus * 1.4) * builtFor(P.k) * (1 - introNow));
         const live = focus > 0.55;
         if (live !== n.el.classList.contains('is-live')) {
           n.el.classList.toggle('is-live', live);
@@ -490,5 +516,14 @@ export function insideModel({ section, canvas, labelsRoot, hud, layers, tokens, 
     },
     /** 0 → 1 as the network is built. */
     setBuilt(b) { built = clamp(b); },
+    /** Scroll to where layer k is in focus. */
+    goTo(k) {
+      const top = section.getBoundingClientRect().top + window.scrollY;
+      const range = section.offsetHeight - window.innerHeight;
+      const hold = (holdVh * window.innerHeight) / Math.max(1, range);
+      const p = (k + 0.25) / L;
+      const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+      window.scrollTo({ top: top + (hold + p * (1 - hold)) * range + 2, behavior: reduce ? 'auto' : 'smooth' });
+    },
   };
 }

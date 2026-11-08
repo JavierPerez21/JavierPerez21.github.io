@@ -53,38 +53,8 @@
   font: 400 12px/1 var(--mono);
 }
 .topbar-meta time { font-variant-numeric: tabular-nums; opacity: 0.7; }
-.topbar-explore { padding: 8px 12px; border: 1px solid currentColor; border-radius: 999px; margin-left: 6px; transition: opacity 0.2s; }
-.topbar-explore:hover { opacity: 0.6; }
 .live { width: 6px; height: 6px; border-radius: 50%; background: currentColor; animation: live 2.4s ease-in-out infinite; }
 @keyframes live { 50% { opacity: 0.25; } }
-
-/* Progress rail: the four eras of the page. */
-.rail {
-  position: fixed;
-  right: 14px;
-  top: 50%;
-  z-index: 40;
-  height: 34vh;
-  transform: translateY(-50%);
-  display: flex;
-  gap: 10px;
-  color: #fff;
-  mix-blend-mode: difference;
-  pointer-events: none;
-}
-html[data-chapter='model'] .rail { opacity: 0; }
-.rail { transition: opacity 0.4s var(--ease); }
-.rail-track { position: relative; width: 1px; background: rgba(255, 255, 255, 0.25); }
-.rail-track i { position: absolute; inset: 0; background: #fff; transform-origin: top; transform: scaleY(0); }
-.rail ol {
-  list-style: none;
-  padding: 0;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  font: 400 10px/1 var(--mono);
-  opacity: 0.6;
-}
 
 /* Footer */
 .footer {
@@ -101,9 +71,6 @@ html[data-chapter='model'] .rail { opacity: 0; }
 .footer a { transition: color 0.2s; }
 .footer a:hover { color: var(--accent); }
 
-@media (max-width: 1199px) {
-  .rail { display: none; }
-}
 @media (max-width: 980px) {
   .chapters { display: none; }
   .topbar { grid-template-columns: 1fr auto; }
@@ -116,3 +83,79 @@ html[data-chapter='model'] .rail { opacity: 0; }
 
 /* Overlay for the §01 → §02 fall (drawn by scenes/bridge.js). */
 .bridge-canvas { position: fixed; inset: 0; width: 100%; height: 100%; z-index: 30; pointer-events: none; }
+
+/* The floating "Explore" button, bottom right, and the links it fans out
+   above itself (ui/dock.js). */
+.dock {
+  position: fixed;
+  right: 22px;
+  bottom: 22px;
+  z-index: 60;
+  display: grid;
+  justify-items: end;
+  gap: 10px;
+}
+.dock-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  height: 44px;
+  padding: 0 8px 0 18px;
+  border: 0;
+  border-radius: 999px;
+  background: var(--ink);
+  color: var(--paper);
+  font: 500 12.5px/1 var(--mono);
+  letter-spacing: 0.02em;
+  cursor: pointer;
+  box-shadow: 0 14px 30px -14px rgba(18, 18, 18, 0.6);
+  transition: transform 0.2s var(--ease), box-shadow 0.2s;
+}
+.dock-toggle:hover { transform: translateY(-1px); box-shadow: 0 18px 34px -14px rgba(18, 18, 18, 0.65); }
+.dock-toggle:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+.dock-plus { position: relative; width: 28px; height: 28px; border-radius: 50%; background: var(--accent); transition: transform 0.35s var(--ease); }
+.dock-plus::before, .dock-plus::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 12px;
+  height: 1.5px;
+  margin: -0.75px 0 0 -6px;
+  background: #fff;
+  border-radius: 1px;
+}
+.dock-plus::after { transform: rotate(90deg); }
+.dock.is-open .dock-plus { transform: rotate(135deg); }
+
+.dock-menu { list-style: none; margin: 0; padding: 0; display: grid; justify-items: end; gap: 8px; pointer-events: none; }
+.dock-menu li {
+  opacity: 0;
+  transform: translateY(12px) scale(0.96);
+  transform-origin: right bottom;
+  transition: opacity 0.2s var(--ease), transform 0.3s var(--ease);
+  transition-delay: calc(var(--i) * 0.03s);
+}
+.dock.is-open .dock-menu { pointer-events: auto; }
+.dock.is-open .dock-menu li { opacity: 1; transform: none; transition-delay: calc(var(--i) * 0.045s); }
+.dock-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  height: 40px;
+  padding: 0 15px 0 12px;
+  border: 1px solid var(--rule);
+  border-radius: 999px;
+  background: var(--paper);
+  color: var(--ink);
+  font: 400 13.5px/1 var(--sans);
+  white-space: nowrap;
+  box-shadow: 0 10px 24px -16px rgba(18, 18, 18, 0.5);
+  transition: border-color 0.2s, color 0.2s, transform 0.2s var(--ease);
+}
+.dock-item:hover, .dock-item:focus-visible { border-color: var(--accent); color: var(--accent); transform: translateX(-3px); outline: none; }
+.dock-icon { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; }
+.dock-hint { font: 400 11px/1 var(--mono); color: var(--ink-3); }
+@media (max-width: 520px) {
+  .dock { right: 14px; bottom: 14px; }
+}

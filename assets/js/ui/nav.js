@@ -1,4 +1,4 @@
-/** Top bar: Madrid clock, active chapter, and the scroll-progress rail. */
+/** Top bar: Madrid clock and active chapter. */
 export function initNav({ timezone }) {
   const clock = document.querySelector('[data-clock]');
   if (clock) {
@@ -18,16 +18,4 @@ export function initNav({ timezone }) {
     }
   }, { rootMargin: '-50% 0px -50% 0px' });
   chapters.forEach((c) => io.observe(c));
-
-  const fill = document.querySelector('[data-progress]');
-  if (fill) {
-    let queued = false;
-    const update = () => {
-      queued = false;
-      const max = document.documentElement.scrollHeight - window.innerHeight;
-      fill.style.transform = `scaleY(${max > 0 ? window.scrollY / max : 0})`;
-    };
-    window.addEventListener('scroll', () => { if (!queued) { queued = true; requestAnimationFrame(update); } }, { passive: true });
-    update();
-  }
 }

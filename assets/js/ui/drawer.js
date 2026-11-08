@@ -59,11 +59,12 @@ function activation(seed, n = 36) {
 
 function renderItem({ item, layer, nid, related }) {
   return [
-    el('p.drawer-kicker', {}, el('span', {}, nid), el('span', {}, `${layer.op} · ${layer.title}`)),
+    el('p.drawer-kicker', {}, el('span', {}, nid), el('span', {}, `${layer.kicker || layer.op} · ${layer.title}`)),
     activation(item.id),
     el('h2.drawer-title', { id: 'drawer-title' }, item.title),
     item.meta ? el('p.drawer-meta', {}, item.meta) : null,
     item.summary ? el('p.drawer-lead', {}, item.summary) : null,
+    item.points?.length ? el('p.drawer-label', {}, 'Highlights') : null,
     item.points?.length ? el('ul.drawer-points', {}, item.points.map((p) => el('li', {}, p))) : null,
     item.image ? el('figure.drawer-fig', {}, el('img', { src: item.image, alt: '', loading: 'lazy', decoding: 'async' })) : null,
     item.links?.length

@@ -58,6 +58,7 @@
 .drawer-title--mono { font: 400 clamp(28px, 3.4vw, 40px) / 1.1 var(--mono); letter-spacing: -0.02em; }
 .drawer-meta { font: 400 12.5px/1.4 var(--mono); color: var(--ink-2); margin-top: -8px; }
 .drawer-lead { font-size: 17.5px; line-height: 1.55; color: var(--ink); text-wrap: pretty; }
+.drawer-label { margin-top: 4px; margin-bottom: -6px; font: 500 11px/1 var(--mono); letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink-3); }
 .drawer-points { padding: 0; list-style: none; display: grid; gap: 10px; color: var(--ink-2); }
 .drawer-points li { position: relative; padding-left: 20px; line-height: 1.55; }
 .drawer-points li::before { content: ''; position: absolute; left: 2px; top: 0.62em; width: 8px; height: 1px; background: var(--accent); }

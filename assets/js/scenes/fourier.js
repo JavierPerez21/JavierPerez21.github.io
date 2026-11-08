@@ -72,11 +72,10 @@ export function fourierName({ canvas, glyphs, readout, slider, replay, onConverg
     // One line, set as large as the hero allows: the monogram fills the upper
     // half, the full name is set as text beneath it (see onLayout).
     const pad = clamp(w * 0.04, 20, 56);
-    const rail = w > 980 ? 80 : 0; // keep clear of the progress rail on the right
     const [x0, y0, x1, y1] = bounds(glyphs.words, glyphs.space);
     const narrow = w < 700;
-    const top = TOPBAR + (narrow ? 62 : clamp(h * 0.09, 64, 96)); // clear of the eyebrow
-    const size = Math.min((w - pad * 2 - rail) / (x1 - x0), (h * (narrow ? 0.27 : 0.46)) / (y1 - y0));
+    const top = TOPBAR + (narrow ? 106 : clamp(h * 0.09, 64, 96)); // clear of the eyebrow (and, on phones, the harmonics slider)
+    const size = Math.min((w - pad * 2) / (x1 - x0), (h * (narrow ? 0.27 : 0.46)) / (y1 - y0));
     const left = (w - (x1 - x0) * size) / 2 - x0 * size; // centred
     const baseline = top - y0 * size;
 
@@ -202,11 +201,13 @@ export function fourierName({ canvas, glyphs, readout, slider, replay, onConverg
 
   let shownK = -1;
   function setReadout(k) {
-    if (!readout || k === shownK) return;
+    if (k === shownK) return;
     shownK = k;
-    readout.k.textContent = String(k);
-    readout.terms.textContent = String(Math.min(N, 2 * k + 1));
-    readout.err.textContent = relError(k).toFixed(4);
+    if (readout) {
+      readout.k.textContent = String(k);
+      readout.terms.textContent = String(Math.min(N, 2 * k + 1));
+      readout.err.textContent = relError(k).toFixed(4);
+    }
     if (slider && mode !== 'user') slider.value = String(Math.log2(k + 1));
   }
 
