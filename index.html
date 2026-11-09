@@ -28,9 +28,81 @@
   <link rel="stylesheet" href="assets/css/drawer.css" />
   <link rel="preload" href="assets/data/name-glyphs.json" as="fetch" crossorigin />
   <script>document.documentElement.classList.add('js');</script>
+  <style>
+    /* Loading screen: "javier" as an ambigram inside two turning arrows. The
+       right half of the mark is the left half turned 180 degrees, so the name
+       reads the same upside down; the stage turns half a turn, holds, and again. */
+    #loader { position: fixed; inset: 0; z-index: 1000; display: none; place-items: center; background: var(--paper); transition: opacity 0.55s var(--ease), visibility 0.55s; }
+    .js #loader { display: grid; }
+    #loader.is-done { opacity: 0; visibility: hidden; pointer-events: none; }
+    .loader-box { display: grid; justify-items: center; gap: clamp(26px, 5vh, 44px); }
+    .loader-stage { position: relative; width: min(66vmin, 400px); aspect-ratio: 1; animation: ambigram 2.4s cubic-bezier(0.65, 0, 0.35, 1) infinite; }
+    .loader-ring, .loader-mark { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
+    .loader-ring { color: var(--accent); }
+    .loader-mark { inset: 50% auto auto 50%; width: 86%; height: auto; transform: translate(-50%, -50%); color: var(--ink); }
+    .loader-label { font: 500 11px/1 var(--mono); letter-spacing: 0.5em; text-indent: 0.5em; text-transform: uppercase; color: var(--ink-2); }
+    .loader-bar { position: relative; width: min(60vw, 240px); height: 2px; background: var(--rule); overflow: hidden; }
+    .loader-bar i { position: absolute; inset: 0 auto 0 0; width: 0; background: var(--accent); animation: loader-fill 1.9s cubic-bezier(0.25, 0.8, 0.3, 1) forwards; }
+    #loader.is-done .loader-bar i { animation: none; width: 100%; transition: width 0.25s linear; }
+    @keyframes ambigram { 0%, 22% { transform: rotate(0); } 45%, 72% { transform: rotate(180deg); } 95%, 100% { transform: rotate(360deg); } }
+    @keyframes loader-fill { to { width: 90%; } }
+    @media (prefers-reduced-motion: reduce) { .loader-stage { animation: none; } }
+  </style>
   <script type="module" src="assets/js/main.js"></script>
 </head>
 <body>
+  <div id="loader" role="status" aria-label="Loading">
+    <div class="loader-box">
+      <div class="loader-stage">
+        <svg class="loader-ring" viewBox="0 0 400 400" aria-hidden="true">
+          <g id="loader-arrow" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round">
+            <path d="M28 120A190 190 0 0 1 372 120" />
+            <path d="M376 129L377 113L364 119Z" fill="currentColor" stroke-width="1.2" stroke-linejoin="round" />
+          </g>
+          <use href="#loader-arrow" transform="rotate(180 200 200)" />
+        </svg>
+        <svg class="loader-mark" viewBox="0 0 600 200" aria-hidden="true">
+          <g fill="none" stroke="currentColor" stroke-width="4.2" stroke-linecap="round" stroke-linejoin="round">
+            <g id="loader-half">
+              <path d="M90 58C90 92 90 116 87 126C83 138 72 142 58 142C42 142 30 135 26 120" />
+              <path d="M210 140V86C210 68 194 58 170 58C152 58 138 64 130 76" />
+              <path d="M210 104H136C128 104 124 111 124 120C124 133 140 142 160 142C182 142 198 136 210 124" />
+              <path d="M248 60L282 140L318 60" />
+              <circle cx="282" cy="168" r="4.5" stroke="none" style="fill: var(--accent)" />
+            </g>
+            <use href="#loader-half" transform="rotate(180 300 100)" />
+          </g>
+        </svg>
+      </div>
+      <p class="loader-label">Loading</p>
+      <div class="loader-bar" aria-hidden="true"><i></i></div>
+    </div>
+  </div>
+  <script>
+    /* Hold the loading screen for about two seconds (long enough for one flip
+       of the name), then release it once the page, the fonts and the data are in. */
+    (function () {
+      var el = document.getElementById('loader');
+      var root = document.documentElement;
+      var done;
+      window.__siteReady = new Promise(function (r) { done = r; });
+      if (!el || !root.classList.contains('js')) { done(); return; }
+      var MIN = 1800, MAX = 2600, t0 = Date.now();
+      var loaded = new Promise(function (r) {
+        if (document.readyState === 'complete') r(); else window.addEventListener('load', r);
+      }).then(function () { return document.fonts && document.fonts.ready; });
+      var cap = new Promise(function (r) { setTimeout(r, MAX); });
+      Promise.race([loaded, cap]).then(function () {
+        setTimeout(function () {
+          el.classList.add('is-done');
+          root.classList.remove('is-locked');
+          done();
+          setTimeout(function () { el.remove(); }, 800);
+        }, Math.max(0, MIN - (Date.now() - t0)));
+      });
+      root.classList.add('is-locked');
+    })();
+  </script>
   <a class="skip" href="#about">Skip to content</a>
 
   <header class="topbar">
@@ -140,16 +212,28 @@
     <section class="next" id="next" data-chapter aria-labelledby="next-title">
       <p class="eyebrow" data-scramble>[ 05 · Contact ]</p>
       <h2 class="title title--xl" id="next-title" data-reveal>Let’s talk.</h2>
-      <div class="sampler" data-sampler>
-        <noscript>
-          <ul class="links-plain">
-            <li><a href="mailto:javierpereztobia@gmail.com">javierpereztobia@gmail.com</a></li>
-            <li><a href="https://www.linkedin.com/in/javipt21/">LinkedIn</a></li>
-            <li><a href="https://github.com/JavierPerez21">GitHub</a></li>
-            <li><a href="https://twitter.com/viperjaerez">X / Twitter</a></li>
-          </ul>
-        </noscript>
-      </div>
+      <ul class="contact-list">
+        <li><a href="assets/docs/javier-perez-tobia-resume.pdf" download="Javier-Perez-Tobia-Resume.pdf"><span class="c-name">Download résumé</span><span class="c-detail">PDF</span><span class="c-go" aria-hidden="true">↓</span></a></li>
+        <li><a href="https://www.linkedin.com/in/javipt21/" target="_blank" rel="noopener"><span class="c-name">LinkedIn</span><span class="c-detail">in/javipt21</span><span class="c-go" aria-hidden="true">↗</span></a></li>
+        <li><a href="https://scholar.google.com/citations?user=ZM0NiG8AAAAJ&amp;hl=en" target="_blank" rel="noopener"><span class="c-name">Google Scholar</span><span class="c-detail">publications and citations</span><span class="c-go" aria-hidden="true">↗</span></a></li>
+        <li><a href="https://github.com/JavierPerez21" target="_blank" rel="noopener"><span class="c-name">GitHub</span><span class="c-detail">JavierPerez21</span><span class="c-go" aria-hidden="true">↗</span></a></li>
+        <li><a href="mailto:javierpereztobia@gmail.com"><span class="c-name">Email</span><span class="c-detail">javierpereztobia@gmail.com</span><span class="c-go" aria-hidden="true">↗</span></a></li>
+        <li><a href="https://twitter.com/viperjaerez" target="_blank" rel="noopener"><span class="c-name">X</span><span class="c-detail">@viperjaerez</span><span class="c-go" aria-hidden="true">↗</span></a></li>
+      </ul>
+
+      <a class="contact-more" href="explore/">
+        <span class="cm-text">
+          <span class="label">Beyond professional life</span>
+          <span class="cm-title">Hikes, ski tours &amp; mountains.</span>
+          <span class="cm-note">When I am not building models I am usually somewhere high up. A few photographs from the trails and summits.</span>
+          <span class="btn btn--accent">See the photos <span aria-hidden="true">→</span></span>
+        </span>
+        <span class="cm-photos" aria-hidden="true">
+          <img src="assets/img/explore/p0353-sm.webp" alt="" loading="lazy" decoding="async" />
+          <img src="assets/img/explore/p2987-sm.webp" alt="" loading="lazy" decoding="async" />
+          <img src="assets/img/explore/p0413-sm.webp" alt="" loading="lazy" decoding="async" />
+        </span>
+      </a>
     </section>
   </main>
 

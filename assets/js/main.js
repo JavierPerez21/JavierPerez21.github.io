@@ -8,7 +8,6 @@ import { lifePaths } from './scenes/paths.js';
 import { seriesToSamples } from './scenes/bridge.js';
 import { samplesToNeurons } from './scenes/descent.js';
 import { insideModel } from './scenes/model.js';
-import { nextTokenSampler } from './scenes/sampler.js';
 import { createDrawer } from './ui/drawer.js';
 import { renderModelCard } from './ui/modelcard.js';
 import { initNav } from './ui/nav.js';
@@ -43,9 +42,9 @@ const paths = safely('paths', () => {
 
 /* 01 · Fourier monogram, and the fall from it into §02 */
 const hero = $('#series');
-fetch(new URL('../data/name-glyphs.json', import.meta.url))
-  .then((r) => r.json())
-  .then((glyphs) => {
+// The Fourier pen starts once the loading screen lets go.
+Promise.all([fetch(new URL('../data/name-glyphs.json', import.meta.url)).then((r) => r.json()), window.__siteReady])
+  .then(([glyphs]) => {
     const heroCanvas = $('.hero-canvas', hero);
     const fourier = fourierName({
       canvas: heroCanvas,
@@ -102,6 +101,3 @@ if (paths && model) {
 
 /* 04 · Model card */
 safely('model-card', () => renderModelCard($('[data-modelcard]'), content));
-
-/* 05 · Next token */
-safely('sampler', () => nextTokenSampler({ root: $('[data-sampler]'), tokens: content.nextTokens }));

@@ -17,12 +17,16 @@ export const profile = {
     { id: 'github', label: 'GitHub', href: 'https://github.com/JavierPerez21' },
     { id: 'x', label: 'X / Twitter', href: 'https://twitter.com/viperjaerez' },
   ],
-  /* The floating "Explore" menu, bottom right. Listed bottom-up from the button. */
+  /* The floating "Explore" menu, bottom right. Listed top to bottom; the last
+     entry sits right above the button. */
   dock: [
-    { id: 'resume', label: 'Download resume', hint: 'PDF', href: 'assets/docs/javier-perez-tobia-resume.pdf', download: 'Javier-Perez-Tobia-Resume.pdf' },
+    { id: 'resume', label: 'Download résumé', hint: 'PDF', href: 'assets/docs/javier-perez-tobia-resume.pdf', download: 'Javier-Perez-Tobia-Resume.pdf' },
+    { id: 'linkedin', label: 'LinkedIn', hint: '↗', href: 'https://www.linkedin.com/in/javipt21/', external: true },
     { id: 'scholar', label: 'Google Scholar', hint: '↗', href: 'https://scholar.google.com/citations?user=ZM0NiG8AAAAJ&hl=en', external: true },
-    { id: 'images', label: 'Images', hint: '→', href: 'explore/' },
     { id: 'github', label: 'GitHub', hint: '↗', href: 'https://github.com/JavierPerez21', external: true },
+    { id: 'email', label: 'Email', hint: '@', href: 'mailto:javierpereztobia@gmail.com' },
+    { id: 'x', label: 'X', hint: '↗', href: 'https://twitter.com/viperjaerez', external: true },
+    { id: 'images', label: 'Beyond professional life', hint: '→', href: 'explore/' },
   ],
 };
 
@@ -48,9 +52,9 @@ export const orgs = {
    clicked open: a summary, bullet points, an optional image and links. */
 export const milestones = [
   {
-    t: 2016.3, z: 0.35, when: '2016', title: 'First prize, Spring Mathematics Competition', where: 'La Rioja, Spain', note: 'XVIII edition. The earliest data point.',
+    t: 2016.3, z: 0.35, when: '2016', title: 'First prize, Spanish Mathematics Olympiad', where: 'Local phase · La Rioja', note: 'The earliest data point.',
     detail: {
-      summary: 'Won first prize in the XVIII Spring Mathematics Competition of La Rioja (Concurso de Primavera), organised by Aprima, the region’s association of mathematics teachers.',
+      summary: 'Won first prize in the local phase of the Spanish Mathematics Olympiad, in La Rioja.',
       points: ['A problem-solving competition for secondary-school students across La Rioja.', 'The first sign that the path would bend towards mathematics.'],
     },
   },
@@ -730,7 +734,7 @@ export const modelCard = {
     ] },
     { label: 'High school', items: [
       'Bronze medal, Spanish Physics Olympiad (local phase)',
-      'First prize, XVIII Spring Mathematics Competition of La Rioja',
+      'First prize, Spanish Mathematics Olympiad (local phase)',
     ] },
     { label: 'Other', items: [
       'CAN-SBX 2018 winner, Canadian Space Agency',
@@ -743,18 +747,6 @@ export const modelCard = {
     { label: 'Machine Learning A-Z: Hands-On Python & R in Data Science', href: 'https://www.udemy.com/certificate/UC-XFO8LZNT/' },
   ],
 };
-
-/* ------------------------------------------------------------------ */
-/* §05 · Next-token sampler (contact)                                   */
-/* ------------------------------------------------------------------ */
-
-export const nextTokens = [
-  { token: ' email', logit: 2.4, href: 'mailto:javierpereztobia@gmail.com', hint: 'javierpereztobia@gmail.com' },
-  { token: ' linkedin', logit: 1.9, href: 'https://www.linkedin.com/in/javipt21/', hint: 'in/javipt21' },
-  { token: ' github', logit: 1.1, href: 'https://github.com/JavierPerez21', hint: 'JavierPerez21' },
-  { token: ' explore', logit: 0.6, href: 'explore/', hint: 'photos from the mountains' },
-  { token: ' x', logit: 0.2, href: 'https://twitter.com/viperjaerez', hint: '@viperjaerez' },
-];
 
 /* ------------------------------------------------------------------ */
 /* /explore · photographs                                               */

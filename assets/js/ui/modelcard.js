@@ -10,7 +10,8 @@ export function renderModelCard(root, { modelCard: mc, skillGroups, profile }) {
       el('strong', {}, profile.name),
       el('span.mc-owner', {}, ` · ${profile.now}`),
       el('span.mc-ver', {}, `Updated ${updated}`)),
-    el('ul.mc-badges', {}, mc.badges.map((b) => el('li', {}, b))));
+    el('ul.mc-badges', {}, mc.badges.map((b) => el('li', {}, b))),
+    el('a.mc-download', { href: 'assets/docs/javier-perez-tobia-resume.pdf', download: 'Javier-Perez-Tobia-Resume.pdf' }, 'Download résumé'));
 
   const capabilities = el('ul.mc-caps', {}, Object.values(skillGroups).map((g) =>
     el('li', {}, el('strong', {}, g.label), el('span', {}, g.text))));
