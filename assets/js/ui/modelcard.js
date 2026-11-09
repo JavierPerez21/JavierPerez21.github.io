@@ -30,7 +30,10 @@ export function renderModelCard(root, { modelCard: mc, skillGroups, profile }) {
 
   const side = el('aside.mc-side', {},
     el('section', {}, el('h3.label', {}, 'Key figures'), evals),
-    el('section', {}, el('h3.label', {}, 'Honours'), el('ul.mc-list', {}, mc.honors.map((h) => el('li', {}, h)))),
+    el('section', {}, el('h3.label', {}, 'Honours'),
+      mc.honors.map((g) => el('div.mc-group', {},
+        el('h4.mc-sub', {}, g.label),
+        el('ul.mc-list', {}, g.items.map((h) => el('li', {}, h)))))),
     el('section', {}, el('h3.label', {}, 'Certifications'),
       el('ul.mc-list', {}, mc.certs.map((c) => el('li', {}, el('a.inline', { href: c.href, ...ext(c.href) }, c.label))))));
 

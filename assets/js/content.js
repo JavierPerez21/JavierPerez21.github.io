@@ -715,20 +715,26 @@ export const modelCard = {
     { k: 'Outside work', v: 'Ski touring and the mountains, whenever I can.', link: { label: 'photos →', href: 'explore/' } },
   ],
   evals: [
-    { bench: 'UBC cumulative average', score: '96.2%', note: 'B.Sc. Physics & Mathematics' },
-    { bench: 'QHack 2022 global rank', score: '#29', note: 'of 800+ · 25/25 challenges' },
-    { bench: 'Peer-reviewed publications', score: '3', note: 'IDA · ACS Synth. Bio. · IEEE SMC' },
-    { bench: 'Deposit-pricing PoC: time to P&L impact', score: '< 4 wk', note: 'retail banking' },
+    { bench: 'UBC graduating average', score: '96.2%', note: 'B.Sc. Physics & Mathematics' },
+    { bench: 'Peer-reviewed publications', score: '5', note: 'ACS Synth. Bio. · IDA · IEEE SMC ×2 · IJGMMP' },
+    { bench: 'High-school rank', score: '#1', note: 'top of my class' },
+    { bench: 'Hands-on experience', score: '5+ yrs', note: 'ML · software development · analytics' },
   ],
   honors: [
-    'Graduating Student Award in Physics & Mathematics, UBC',
-    'International Student Faculty Award, UBC',
-    'Deputy Vice-Chancellor Award for International Students, UBC',
-    'International Major Entrance Scholarship, UBC',
-    'Outstanding International Student Award, UBC',
-    'CAN-SBX 2018 winner, Canadian Space Agency',
-    'Bronze medal, Spanish Physics Olympiad (local phase)',
-    'First prize, XVIII Spring Mathematics Competition of La Rioja',
+    { label: 'UBC', items: [
+      'Graduating Student Award in Physics & Mathematics',
+      'International Student Faculty Award',
+      'Deputy Vice-Chancellor Award for International Students',
+      'International Major Entrance Scholarship',
+      'Outstanding International Student Award',
+    ] },
+    { label: 'High school', items: [
+      'Bronze medal, Spanish Physics Olympiad (local phase)',
+      'First prize, XVIII Spring Mathematics Competition of La Rioja',
+    ] },
+    { label: 'Other', items: [
+      'CAN-SBX 2018 winner, Canadian Space Agency',
+    ] },
   ],
   certs: [
     { label: 'IBM Certified Associate Developer: Quantum Computation using Qiskit', href: 'https://www.credly.com/badges/2ffc6f20-d1fc-4ce0-ab66-ddfc0ada28f4' },
