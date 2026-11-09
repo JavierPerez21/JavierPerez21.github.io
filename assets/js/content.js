@@ -733,8 +733,10 @@ export const modelCard = {
       'Outstanding International Student Award',
     ] },
     { label: 'High school', items: [
-      'Bronze medal, Spanish Physics Olympiad (local phase)',
+      'First of my graduating class',
+      '13.24 / 14 in the EBAU university entrance exam',
       'First prize, Spanish Mathematics Olympiad (local phase)',
+      'Bronze medal, Spanish Physics Olympiad (local phase)',
     ] },
     { label: 'Other', items: [
       'CAN-SBX 2018 winner, Canadian Space Agency',

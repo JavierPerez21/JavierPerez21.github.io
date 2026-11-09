@@ -1,0 +1,338 @@
+\documentclass[10pt,a4paper]{article}
+
+% =========================================================
+% PACKAGES
+% =========================================================
+
+\usepackage[a4paper,left=0.55in,right=0.55in,top=0.42in,bottom=0.42in]{geometry}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{lmodern}
+\usepackage{microtype}
+\usepackage{enumitem}
+\usepackage{titlesec}
+\usepackage{tabularx}
+\usepackage{xcolor}
+\usepackage[hidelinks]{hyperref}
+\usepackage{ragged2e}
+\usepackage{iftex}
+
+% =========================================================
+% ATS / PDF TEXT EXTRACTION
+% =========================================================
+
+\ifPDFTeX
+  \input{glyphtounicode}
+  \pdfgentounicode=1
+\fi
+
+% =========================================================
+% GLOBAL LAYOUT
+% =========================================================
+
+\pagestyle{empty}
+
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0pt}
+\setlength{\tabcolsep}{0pt}
+\setlength{\emergencystretch}{2em}
+
+\renewcommand{\familydefault}{\sfdefault}
+
+% =========================================================
+% COLORS
+% =========================================================
+
+\definecolor{accent}{HTML}{163A5F}
+\definecolor{textgray}{HTML}{333333}
+
+\color{textgray}
+
+% =========================================================
+% SECTION FORMATTING
+% =========================================================
+
+\titleformat{\section}
+  {\large\bfseries\color{accent}}
+  {}{0em}{}
+  [\vspace{-0.15em}\color{accent}\titlerule]
+
+\titlespacing*{\section}
+  {0pt}
+  {0.6em}
+  {0.45em}
+
+% =========================================================
+% LIST FORMATTING
+% =========================================================
+
+\setlist[itemize]{
+  leftmargin=1.0em,
+  label=\textbullet,
+  itemsep=0.14em,
+  topsep=0.12em,
+  parsep=0pt,
+  partopsep=0pt
+}
+
+% =========================================================
+% CUSTOM COMMANDS
+% =========================================================
+
+% Professional / research role
+\newcommand{\role}[4]{%
+  \begin{tabularx}{\textwidth}{@{}Xr@{}}
+    \textbf{#1} & \textbf{#2} \\
+    \textit{#3} & \textit{#4} \\
+  \end{tabularx}
+  \vspace{0.05em}
+}
+
+% Education entry
+\newcommand{\edu}[4]{%
+  \begin{tabularx}{\textwidth}{@{}Xr@{}}
+    \textbf{#1} & \textbf{#2} \\
+    \textit{#3} & \textit{#4} \\
+  \end{tabularx}
+  \vspace{0.05em}
+}
+
+% Skills row
+\newcommand{\skillline}[2]{%
+  \textbf{#1:} #2\par\vspace{0.10em}
+}
+
+% Compact clickable publication
+\newcommand{\paperlink}[2]{%
+  \href{#1}{\textbf{\color{accent}#2}}%
+}
+
+% =========================================================
+% DOCUMENT
+% =========================================================
+
+\begin{document}
+
+% =========================================================
+% HEADER
+% =========================================================
+
+\begin{center}
+
+  {\LARGE\bfseries\color{accent}
+  JAVIER PEREZ TOBIA}\\[0.20em]
+
+  {\normalsize\bfseries
+  APPLIED AI / ML ENGINEER
+  \;|\;
+  POWER \& GAS TRADING
+  \;|\;
+  RESEARCH TO PRODUCTION}\\[0.30em]
+
+  \small
+
+  Madrid, Spain
+  \;|\;
+  +34 689 452 271
+  \;|\;
+  \href{mailto:javierpereztobia@gmail.com}
+  {javierpereztobia@gmail.com}
+  \;|\;
+  \href{https://www.linkedin.com/in/javipt21}
+  {linkedin.com/in/javipt21}
+  \;|\;
+  \href{https://javierperez21.github.io}
+  {javierperez21.github.io}
+
+\end{center}
+
+\vspace{-0.25em}
+
+% =========================================================
+% PROFILE
+% =========================================================
+
+\section{PROFILE}
+
+\small
+
+Applied AI/ML engineer and researcher who owns AI systems from problem
+framing through modeling, optimization, productionization, and enterprise
+adoption. Senior Data Scientist I (Associate) at QuantumBlack, AI by McKinsey,
+leading data-science teams of 5+ across power \& gas trading, banking, and
+telecom while staying hands-on in the code. Deep experience in
+\textbf{power \& gas trading and energy management}, production
+\textbf{ML engineering} (real-time models, MLOps, data platforms) and
+\textbf{applied AI} (LLM and agentic systems with humans in the loop), with
+deployed models driving tangible profit uplift; five peer-reviewed papers from UBC research.
+
+% =========================================================
+% TECHNICAL EXPERTISE
+% =========================================================
+
+\section{TECHNICAL EXPERTISE}
+
+\small
+
+\skillline{Power \& gas trading}{
+Hydro scheduling and bidding (day-ahead, intraday, aFRR/mFRR); gas storage valuation
+(rolling intrinsic, LSMC) and delta hedging; gas logistics balancing; forward curves,
+Monte Carlo price models; multi-asset trading optimization}
+
+\skillline{ML \& research stack}{
+\textbf{Python, PyTorch, JAX, Qiskit}, scikit-learn, NumPy, pandas; research in deep learning, vision, time series, generative modeling, adversarial robustness, biomolecular ML}
+
+\skillline{Applied AI \& LLM systems}{agentic co-development and harnessing, RAG, agentic workflows,
+vector retrieval, tool calling, LLM evaluation, human-in-the-loop systems, production LLM applications}
+
+\skillline{Optimization \& control systems}{
+\textbf{Gurobi, MATLAB, C++}; MILP, stochastic and portfolio optimization, LSMC, adaptive model predictive control, digital twins}
+
+\skillline{ML engineering \& production}{
+\textbf{SQL, Linux, Git, AWS, Azure}; MLOps, model serving, data pipelines and data-lake architecture, real-time ML, enterprise AI platform design}
+
+\section{PROFESSIONAL EXPERIENCE}
+
+\small
+
+\role
+{Senior Data Scientist I (Associate)}
+{Sep 2023 -- Present}
+{QuantumBlack, AI by McKinsey}
+{Madrid, Spain}
+{Data Scientist I (Sep 23--Nov 24)
+$\rightarrow$
+Data Scientist II (Nov 24--Nov 25)
+$\rightarrow$
+Senior Data Scientist I / Associate (Nov 25--Present).}
+
+Own end-to-end AI workstreams and lead data-science teams of 5+ across power \& gas trading,
+  banking, and telecom in Europe and Latin America, turning ambiguous business problems into
+  models, production systems, and operating-model changes. Namely:
+
+\begin{itemize}
+
+  \item
+  \textbf{Power \& gas trading and energy management:}
+  built and deployed ML forecasting models, Gurobi-based multi-asset optimization and stochastic
+  valuation tools now used daily by a European utility's trading and operations teams; redesigned the
+  end-to-end process so AI feeds core trading decisions, and upskilled the client's software teams to run it.
+
+  \item
+  \textbf{Applied AI / LLM systems:}
+  led the build of an LLM call-auditing system with humans in the loop for a major telecom's
+  contact centre; designed and taught a course on coding with AI agents to a trading desk's analysts.
+
+  \item
+  \textbf{ML engineering for refining operations:}
+  built a digital twin of a refinery, real-time ML models that predict crude properties, and
+  optimization modules, then integrated them into day-to-day operational workflows.
+
+  \item
+  \textbf{ML-driven retail-bank deposit pricing:}
+  developed price-sensitivity and portfolio-allocation models for a European retail bank; proofs of
+  concept showed measurable P\&L impact in under four weeks, followed by a wave-based rollout across the managed portfolio.
+
+  \item
+  \textbf{Customer-value optimization:}
+  redesigned analytics for major telecoms in Latin America and Europe: built ML targeting models and
+  LLM-based call-transcription analytics and knowledge retrieval, re-architected the data lake, and
+  delivered a company-wide engine that automates segmentation, targeting and campaigns.
+
+\end{itemize}
+
+\vspace{0.15em}
+
+% =========================================================
+% RESEARCH EXPERIENCE
+% =========================================================
+
+\section{RESEARCH EXPERIENCE}
+
+\small
+
+\role
+{Machine Learning Researcher}
+{May 2021 -- Jul 2022}
+{University of British Columbia -- DAIS \& IDSL Labs}
+{Kelowna, Canada}
+
+\begin{itemize}
+
+  \item
+  \textbf{Robust deep learning / computer vision:} developed architectures and attribution-guided defenses to improve neural-network robustness against adversarial examples; achieved state-of-the-art results against AutoAttack on benchmark datasets. \paperlink {https://doi.org/10.1007/978-3-031-01333-1_18}
+  {IDA 2022}
+
+  \item
+  \textbf{Bioinformatics / biomolecular ML:} built models for aptamer--protein binding and methods for aptamer sequence search and generation with experimentally validated predicted sequences. \paperlink {https://doi.org/10.1021/acssynbio.2c00462}
+  {ACS Synthetic Biology 2023}
+
+  \item
+  \textbf{Time-series / trace reconstruction and imbalanced learning:} conducted research on event-trace reconstruction and data-generation methods for imbalanced classification. \paperlink{https://doi.org/10.1109/SMC52423.2021.9658712}
+  {IEEE SMC 2021}
+
+  \item
+  \textbf{Other publications:}
+  \paperlink{https://ieeexplore.ieee.org/document/9945528}{Improving imbalanced dataset classification using Conditional Classifier-Generator (cCGen), IEEE SMC 2022};
+  \paperlink{https://doi.org/10.1142/S0219887820500383}{Lorentz symmetry breaking in SUSY QED, IJGMMP 2020}
+
+\end{itemize}
+
+\vspace{0.15em}
+
+% =========================================================
+% EDUCATION & HONORS
+% =========================================================
+
+\section{EDUCATION \& HONORS}
+
+\small
+
+\edu
+{B.Sc. -- Physics \& Mathematics \; (96.2\% cumulative average)}
+{2018 -- 2023}
+{University of British Columbia}
+{Kelowna, Canada}
+
+\begin{itemize}
+
+  \item
+  \textbf{Selected honors:}
+  Graduating Student Award in Physics \& Mathematics;
+  International Student Faculty Award;
+  International Major Entrance Scholarship;
+  Outstanding International Student.
+
+  \item
+  \textbf{QHack 2022 quantum computing hackathon:} \textbf{\#29 globally} of 800+; all 25 challenges solved (quantum algorithms, QML).
+
+  \item
+  \textbf{CAN-SBX winner:}
+  co-led the team behind a stratospheric balloon experiment flown by the Canadian Space Agency.
+
+  \item
+  \textbf{High school:}
+  first of my class; \textbf{13.24/14} EBAU entrance exam; 1st prize Math Olympiad, bronze Physics Olympiad (local).
+
+  \item
+  \textbf{Academic leadership:}
+  Co-founder, Student Independent Research Club;
+  Teaching Assistant for undergraduate mathematics courses.
+
+\end{itemize}
+
+% =========================================================
+% LANGUAGES
+% =========================================================
+
+\section{LANGUAGES}
+
+\small
+
+Spanish: native
+\;|\;
+English: C2 / bilingual proficiency
+\;|\;
+French: B2 / intermediate proficiency
+
+\end{document}
