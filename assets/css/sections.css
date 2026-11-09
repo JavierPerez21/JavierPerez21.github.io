@@ -63,6 +63,16 @@
 }
 .hero-intro em { font-family: var(--serif); font-size: 1.12em; color: var(--ink); }
 
+/* With the monogram drawn, the intro sits centred right under the name, wide enough
+   for three or four lines. */
+.js .hero.has-canvas .hero-foot {
+  top: calc(var(--name-top, 60vh) + clamp(92px, 12.5vh, 128px));
+  bottom: auto;
+  justify-items: center;
+  text-align: center;
+}
+.js .hero.has-canvas .hero-intro { max-width: min(760px, 100%); text-wrap: balance; }
+
 .hero-harmonics {
   position: absolute;
   top: calc(var(--topbar) + 54px);
@@ -77,6 +87,8 @@
 
 @media (max-width: 760px) {
   .hero-foot { bottom: 56px; }
+  .js .hero.has-canvas .hero-foot { top: auto; bottom: 56px; justify-items: start; text-align: left; }
+  .js .hero.has-canvas .hero-intro { max-width: 34ch; text-wrap: pretty; }
 }
 
 /* =============================================================== */

@@ -19,6 +19,13 @@ from pathlib import Path
 
 from PIL import Image, ImageOps
 
+try:  # iPhone photos: pip install pillow-heif
+    from pillow_heif import register_heif_opener
+
+    register_heif_opener()
+except ImportError:
+    pass
+
 Image.MAX_IMAGE_PIXELS = None
 ROOT = Path(__file__).resolve().parent.parent
 PAPER = (243, 241, 235)
@@ -55,10 +62,14 @@ def photos(src_dirs: list[str]) -> None:
     out = ROOT / "assets" / "img" / "explore"
     for src in src_dirs:
         for f in sorted(Path(src).iterdir()):
-            if f.suffix.lower() not in PHOTO_EXT:
-                continue
+            if f.suffix.lower() not in PHOTO_EXT or f.stem.endswith(("-sm", "-lg")):
+                continue  # not a photo, or one of our own outputs
             im = trim_black_bars(ImageOps.exif_transpose(Image.open(f)).convert("RGB"))
-            name = f.stem.lower().replace("img_", "p")
+            stem = f.stem.lower()
+            name = stem.replace("img_", "p") if stem.startswith("img_") else "p" + "".join(c for c in stem if c.isalnum())[:8]
+            if (out / f"{name}-lg.webp").exists():
+                print(f"{f.name}  skipped, {name} already exists")
+                continue
             print(f"{f.name}  {im.size[0]}x{im.size[1]}")
             _save(im, out / f"{name}-sm.webp", 720, 74)
             _save(im, out / f"{name}-lg.webp", 2000, 80)
