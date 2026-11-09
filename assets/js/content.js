@@ -9,13 +9,13 @@ export const profile = {
   location: 'Madrid, Spain',
   timezone: 'Europe/Madrid',
   email: 'javierpereztobia@gmail.com',
-  now: 'Associate, Data Science · QuantumBlack, AI by McKinsey',
+  now: 'Senior Data Scientist I · QuantumBlack, AI by McKinsey',
   updated: '2026-11',
   links: [
     { id: 'email', label: 'Email', href: 'mailto:javierpereztobia@gmail.com' },
     { id: 'linkedin', label: 'LinkedIn', href: 'https://www.linkedin.com/in/javipt21/' },
     { id: 'github', label: 'GitHub', href: 'https://github.com/JavierPerez21' },
-    { id: 'x', label: 'X / Twitter', href: 'https://twitter.com/javi_pereztobia' },
+    { id: 'x', label: 'X / Twitter', href: 'https://twitter.com/viperjaerez' },
   ],
   /* The floating "Explore" menu, bottom right. Listed bottom-up from the button. */
   dock: [
@@ -161,9 +161,9 @@ export const milestones = [
     },
   },
   {
-    t: 2022.45, z: 1.42, when: 'Jun 2022', org: 'mck', title: 'Data Science Intern at McKinsey', where: 'McKinsey & Company · Madrid',
+    t: 2022.45, z: 1.42, when: 'Jun 2022', org: 'mck', title: 'Data Science Intern at McKinsey', where: 'McKinsey & Company · Europe',
     detail: {
-      summary: 'Joined McKinsey & Company in Madrid as a Data Science Intern (Jun – Jul 2022): my first contact with industry.',
+      summary: 'Joined McKinsey & Company in Europe as a Data Science Intern (Jun – Jul 2022): my first contact with industry.',
       points: [
         'Optimisation models for futures pricing and asset allocation.',
         'Productionised the models and migrated them to the cloud.',
@@ -184,42 +184,42 @@ export const milestones = [
     },
   },
   {
-    t: 2023.7, z: 1.55, when: 'Sep 2023', org: 'qb', title: 'Data Scientist at QuantumBlack', where: 'QuantumBlack, AI by McKinsey · Madrid',
+    t: 2023.7, z: 1.55, when: 'Sep 2023', org: 'qb', title: 'Data Scientist I at QuantumBlack', where: 'QuantumBlack, AI by McKinsey · Europe',
     detail: {
-      summary: 'Joined QuantumBlack, AI by McKinsey, in Madrid as a Data Scientist, starting in energy.',
+      summary: 'Joined QuantumBlack, AI by McKinsey, in Europe as a Data Scientist I, starting in energy.',
       points: [
-        'AI-native energy trading for a major Spanish utility: ML forecasting and Gurobi-based multi-asset optimisation feeding the desk’s daily decisions.',
-        'A digital twin of a refinery for a Spanish energy player, with real-time ML models predicting crude properties and optimisation built into operations.',
+        'AI-native energy trading for a major European utility: ML forecasting and Gurobi-based multi-asset optimisation feeding the desk’s daily decisions.',
+        'A digital twin of a refinery for a European energy player, with real-time ML models predicting crude properties and optimisation built into operations.',
       ],
     },
   },
   {
-    t: 2024.85, z: 1.62, when: 'Nov 2024', org: 'qb', title: 'Senior Data Scientist at QuantumBlack', where: 'QuantumBlack, AI by McKinsey', note: 'Energy trading, refining, retail banking.',
+    t: 2024.85, z: 1.62, when: 'Nov 2024', org: 'qb', title: 'Data Scientist II at QuantumBlack', where: 'QuantumBlack, AI by McKinsey', note: 'Energy trading, refining, retail banking.',
     detail: {
-      summary: 'Took ownership of end-to-end AI workstreams, from proof of concept to deployment, on promotion to Senior Data Scientist.',
+      summary: 'Took ownership of end-to-end AI workstreams, from proof of concept to deployment, on promotion to Data Scientist II.',
       points: [
-        'ML-driven deposit pricing for a leading German retail bank: price-sensitivity and portfolio-allocation models, with measurable P&L impact in under four weeks.',
+        'ML-driven deposit pricing for a leading European retail bank: price-sensitivity and portfolio-allocation models, with measurable P&L impact in under four weeks.',
         'Wave-based deployment, then expansion to the full portfolio under management.',
         'Capability building across client software-development teams.',
       ],
     },
   },
   {
-    t: 2025.85, z: 1.72, when: 'Nov 2025', org: 'qb', title: 'Associate, Data Science at QuantumBlack', where: 'QuantumBlack, AI by McKinsey', note: 'Leading data-science teams of 5+ across power & gas trading, banking and telecom.',
+    t: 2025.85, z: 1.72, when: 'Nov 2025', org: 'qb', title: 'Senior Data Scientist I at QuantumBlack', where: 'QuantumBlack, AI by McKinsey', note: 'Leading data-science teams of 5+ across power & gas trading, banking and telecom.',
     detail: {
-      summary: 'Lead teams of 5+ data scientists across power and gas trading, banking and telecom as Associate, Data Science, while staying hands-on in the models and the code.',
+      summary: 'Lead teams of 5+ data scientists across power and gas trading, banking and telecom as Senior Data Scientist I, while staying hands-on in the models and the code.',
       points: [
         'Power and gas trading and energy management for a European utility: optimisation, stochastic modelling and valuation tools used every day by its trading and operations teams.',
         'Oversaw an LLM call-auditing system with humans in the loop for a major telecom operator’s contact centre.',
         'Designed and taught a course on coding with AI agents for a trading desk’s analysts.',
-        'Customer-value optimisation for major Latin American and Iberian telcos: ML targeting and a company-wide optimisation “brain” for segmentation, targeting and campaigns.',
+        'Customer-value optimisation for major telcos across Latin America and Europe: ML targeting and a company-wide optimisation “brain” for segmentation, targeting and campaigns.',
       ],
     },
   },
   {
-    t: NOW, z: 1.78, when: 'now', org: 'qb', title: 'You are here', where: 'Madrid · QuantumBlack, AI by McKinsey', note: 'Everything to the right is still being sampled: scroll on.',
+    t: NOW, z: 1.78, when: 'now', org: 'qb', title: 'You are here', where: 'QuantumBlack, AI by McKinsey', note: 'Everything to the right is still being sampled: scroll on.',
     detail: {
-      summary: 'Building AI that survives contact with the real world, from Madrid: optimisation, ML and LLM systems in production.',
+      summary: 'Building AI that survives contact with the real world: optimisation, ML and LLM systems in production.',
       points: ['Everything to the right of this line is still being sampled. Scroll on to see some of the futures.'],
       links: [{ label: 'Get in touch', href: '#next' }],
     },
@@ -285,7 +285,7 @@ export const layers = [
   {
     id: 'energy',
     op: 'attention',
-    kicker: 'Industry',
+    kicker: 'Energy trading & management',
     title: 'Power & gas · QuantumBlack',
     span: '2023 → now',
     blurb: 'Power and gas trading and energy management for a European utility: hydro scheduling and market bidding, gas storage valuation and hedging, gas logistics. Hands-on in the models and the code, while leading the junior data scientists around them.',
@@ -295,7 +295,7 @@ export const layers = [
         title: 'Hydro cascade optimisation & market bidding',
         tag: 'power · hydro',
         meta: 'European utility · lead developer',
-        summary: 'Built the daily optimiser that schedules a multi-reservoir hydro cascade and turns the plan into bids for the Iberian power markets.',
+        summary: 'Built the daily optimiser that schedules a multi-reservoir hydro cascade and turns the plan into bids for the European power markets.',
         points: [
           'Long-term stochastic MILP to the end of the hydrological year over dry, medium and wet inflow scenarios: cascade mass balance, head-dependent production, turbine limits, ecological flows, spillage rules and end-of-horizon reservoir targets.',
           'Hourly water-value curves feed a 24-hour short-term MILP that builds day-ahead and intraday bids, aFRR (secondary) and mFRR (tertiary) reserve offers, and a unit-by-unit breakdown of cleared programmes.',
@@ -338,7 +338,7 @@ export const layers = [
         id: 'logistics',
         title: 'Gas logistics balancing',
         tag: 'gas · logistics',
-        meta: 'European utility · Spain, Portugal & France',
+        meta: 'European utility',
         summary: 'Led the team behind a daily optimiser that balances a gas portfolio across three national systems at the lowest network and trading cost.',
         points: [
           'MILP minimising regulated network-access tariffs and trading costs: LNG regasification and tank levels, underground storage, cross-border flows at the interconnection points, and buy/sell decisions per traded product.',
@@ -351,7 +351,7 @@ export const layers = [
         id: 'trading',
         title: 'AI-native energy trading',
         tag: 'power · trading',
-        meta: 'Major Spanish energy utility',
+        meta: 'Major European energy utility',
         summary: 'Moved AI into the core of the trading desk’s decisions, not just into a dashboard.',
         points: [
           'ML forecasting and Gurobi-based multi-asset optimisation feeding the daily trading decisions.',
@@ -364,7 +364,7 @@ export const layers = [
         id: 'refining',
         title: 'Digital twin of a refinery',
         tag: 'energy · operations',
-        meta: 'Spanish energy player',
+        meta: 'European energy player',
         summary: 'Transformed refining operations with digital twins, real-time ML and optimisation built into the daily workflows.',
         points: [
           'Digital twins of the process, plus real-time ML models predicting crude properties.',
@@ -391,7 +391,7 @@ export const layers = [
   {
     id: 'industry',
     op: 'cross-attention',
-    kicker: 'Industry',
+    kicker: 'Other industry experience',
     title: 'Banking, telecom & LLMs',
     span: '2022 · 2024 → now',
     blurb: 'Pricing for retail banking, customer value and LLM systems for telecom, and where it started: a summer at McKinsey.',
@@ -414,7 +414,7 @@ export const layers = [
         id: 'telco',
         title: 'Customer-value optimisation',
         tag: 'telecom · ML',
-        meta: 'Major Latin American & Iberian telcos',
+        meta: 'Major telcos · Latin America & Europe',
         summary: 'Rebuilt the analytics behind customer-value management.',
         points: [
           'ML targeting models and a company-wide optimisation “brain” for automated segmentation, targeting and campaign execution.',
@@ -427,8 +427,8 @@ export const layers = [
         id: 'deposits',
         title: 'ML-driven deposit pricing',
         tag: 'banking · pricing',
-        meta: 'Leading German retail bank',
-        summary: 'Built price-sensitivity and portfolio-allocation models for the retail deposits of a leading German bank.',
+        meta: 'Leading European retail bank',
+        summary: 'Built price-sensitivity and portfolio-allocation models for the retail deposits of a leading European bank.',
         points: [
           'Proofs of concept showed measurable P&L impact in under four weeks.',
           'Wave-based deployment, then expansion to the full portfolio under management.',
@@ -439,7 +439,7 @@ export const layers = [
         id: 'intern',
         title: 'Futures pricing & asset allocation',
         tag: 'intern · 2022',
-        meta: 'Data Science Intern · McKinsey Madrid',
+        meta: 'Data Science Intern · McKinsey Europe',
         summary: 'Built optimisation models for futures pricing and asset allocation, in my first contact with industry in the summer of 2022.',
         points: [
           'Productionised the models and migrated them to the cloud.',
@@ -454,7 +454,7 @@ export const layers = [
     kicker: 'Academia',
     title: 'Research at UBC',
     span: '2021 → 2022',
-    blurb: 'Machine Learning Researcher in the DAIS and IDSL labs. Three publications across adversarial robustness, biomolecular ML and time series.',
+    blurb: 'Machine Learning Researcher in the DAIS and IDSL labs. Four publications across adversarial robustness, biomolecular ML, time series and imbalanced learning.',
     items: [
       {
         id: 'ags',
@@ -753,7 +753,7 @@ export const nextTokens = [
   { token: ' linkedin', logit: 1.9, href: 'https://www.linkedin.com/in/javipt21/', hint: 'in/javipt21' },
   { token: ' github', logit: 1.1, href: 'https://github.com/JavierPerez21', hint: 'JavierPerez21' },
   { token: ' explore', logit: 0.6, href: 'explore/', hint: 'photos from the mountains' },
-  { token: ' x', logit: 0.2, href: 'https://twitter.com/javi_pereztobia', hint: '@javi_pereztobia' },
+  { token: ' x', logit: 0.2, href: 'https://twitter.com/viperjaerez', hint: '@viperjaerez' },
 ];
 
 /* ------------------------------------------------------------------ */

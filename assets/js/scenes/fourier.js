@@ -46,7 +46,7 @@ function bounds(words, space) {
 }
 
 export function fourierName({ canvas, glyphs, readout, slider, replay, onConverged, onLayout }) {
-  const ink = cssVar('--ink') || '#121212';
+  const ink = cssVar('--hero-ink') || cssVar('--ink') || '#121212';
   const accent = cssVar('--accent') || '#ff4d1f';
 
   const spec = { re: new Float64Array(N), im: new Float64Array(N) };

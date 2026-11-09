@@ -28,6 +28,7 @@ const SVG = 'http://www.w3.org/2000/svg';
 export function lifePaths({ section, canvas, timelineRoot, hud, replayBtn, milestones, orgs = {}, now }) {
   const ink = cssVar('--ink') || '#121212';
   const accent = cssVar('--accent') || '#ff4d1f';
+  const cloudInk = cssVar('--cloud') || ink;
   const paper = cssVar('--paper') || '#f3f1eb';
   const mono = cssVar('--mono') || 'monospace';
   const setText = (node, txt) => { if (node && node.textContent !== txt) node.textContent = txt; };
@@ -330,7 +331,7 @@ export function lifePaths({ section, canvas, timelineRoot, hud, replayBtn, miles
   function paintOffscreen(s) {
     if (!s.w) return;
     cloudCtx = prep(cloud, s);
-    cloudCtx.strokeStyle = ink;
+    cloudCtx.strokeStyle = cloudInk;
     cloudCtx.lineJoin = 'round';
     for (let k = 0; k < baked; k++) bake(k);
   }
