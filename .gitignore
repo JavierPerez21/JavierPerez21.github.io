@@ -1,0 +1,18 @@
+# OS / editors
+.DS_Store
+Thumbs.db
+.vscode/
+
+# Python
+__pycache__/
+*.pyc
+
+# Local Claude Code settings
+.claude/settings.local.json
+
+# Original photos (HEIC/JPG). Only the web-sized -sm/-lg.webp copies are published;
+# regenerate them with scripts/optimize_images.py photos assets/img/explore
+assets/img/explore/*.heic
+assets/img/explore/*.HEIC
+assets/img/explore/*.jpg
+assets/img/explore/*.jpeg

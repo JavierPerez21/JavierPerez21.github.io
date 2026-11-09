@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>Explore · Javier Perez Tobia</title>
+  <meta name="description" content="Samples from outside the model: photographs from the mountains, by Javier Perez Tobia." />
+  <meta name="theme-color" content="#f3f1eb" />
+  <link rel="canonical" href="https://javierperez21.github.io/explore/" />
+  <link rel="icon" href="../assets/img/favicon.svg" type="image/svg+xml" />
+  <meta property="og:title" content="Explore · Javier Perez Tobia" />
+  <meta property="og:description" content="Samples from outside the model. Mostly mountains." />
+  <meta property="og:image" content="https://javierperez21.github.io/assets/img/og.png" />
+  <meta name="twitter:card" content="summary_large_image" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@300..600&family=Geist+Mono:wght@400;500&family=Instrument+Serif:ital@0;1&display=swap" />
+  <link rel="stylesheet" href="../assets/css/tokens.css" />
+  <link rel="stylesheet" href="../assets/css/base.css" />
+  <link rel="stylesheet" href="../assets/css/explore.css" />
+  <script type="module" src="../assets/js/explore.js"></script>
+</head>
+<body class="explore">
+  <header class="ex-bar">
+    <a class="ex-back" href="../">
+      <span aria-hidden="true">←</span> Javier Perez Tobia
+    </a>
+    <div class="ex-title">
+      <h1>Explore</h1>
+      <p>Samples from outside the model. Mostly mountains, <span data-count>24</span> of them.</p>
+    </div>
+    <p class="ex-hint" aria-hidden="true">drag · scroll · click</p>
+  </header>
+
+  <main class="field" tabindex="0" aria-label="Photo field. Drag or use the arrow keys to move around; click a photo to enlarge it.">
+    <div class="field-layer"></div>
+  </main>
+
+  <dialog class="lightbox" aria-label="Photo">
+    <figure>
+      <img alt="" />
+      <figcaption class="lightbox-cap"></figcaption>
+    </figure>
+    <div class="lightbox-ctrl">
+      <button type="button" class="btn btn--sm" data-lb="prev" aria-label="Previous photo">←</button>
+      <button type="button" class="btn btn--sm" data-lb="next" aria-label="Next photo">→</button>
+      <button type="button" class="btn btn--sm" data-lb="close" aria-label="Close">esc ✕</button>
+    </div>
+  </dialog>
+</body>
+</html>

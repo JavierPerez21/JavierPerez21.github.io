@@ -1,174 +1,260 @@
-<!DOCTYPE HTML>
-<!--
-	Phantom by HTML5 UP
-	html5up.net | @ajlkn
-	Free for personal and commercial use under the CCA 3.0 license (html5up.net/license)
--->
-<html>
-	<head>
-		<title>Javier Perez Tobia</title>
-		<meta charset="utf-8" />
-		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
-		<link rel="stylesheet" href="assets/css/main.css" />
-		<noscript><link rel="stylesheet" href="assets/css/noscript.css" /></noscript>
-	</head>
-	<body class="is-preload">
-		<!-- Wrapper -->
-			<div id="wrapper">
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>Javier Perez Tobia · Applied AI & ML engineer</title>
+  <meta name="description" content="Javier Perez Tobia: applied AI and machine-learning engineer in Madrid. Physics & Mathematics (UBC), ML research in adversarial robustness and biomolecular ML, and production AI at QuantumBlack, AI by McKinsey." />
+  <meta name="author" content="Javier Perez Tobia" />
+  <meta name="theme-color" content="#f3f1eb" />
+  <link rel="canonical" href="https://javierperez21.github.io/" />
+  <link rel="icon" href="assets/img/favicon.svg" type="image/svg+xml" />
 
-				<!-- Header -->
-					<header id="header">
-						<div class="inner">
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://javierperez21.github.io/" />
+  <meta property="og:title" content="Javier Perez Tobia · Applied AI & ML engineer" />
+  <meta property="og:description" content="From Fourier series to Monte Carlo to transformers: a personal site that walks the history of AI." />
+  <meta property="og:image" content="https://javierperez21.github.io/assets/img/og.png" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:site" content="@viperjaerez" />
 
-							<!-- Logo -->
-								<a href="index.html" class="logo">
-									<span class="symbol"><img src="images/logo.svg" alt="" /></span><span class="title">Javier Perez Tobia</span>
-								</a>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@300..600&family=Geist+Mono:wght@400;500&family=Instrument+Serif:ital@0;1&display=swap" />
+  <link rel="stylesheet" href="assets/css/tokens.css" />
+  <link rel="stylesheet" href="assets/css/base.css" />
+  <link rel="stylesheet" href="assets/css/layout.css" />
+  <link rel="stylesheet" href="assets/css/sections.css" />
+  <link rel="stylesheet" href="assets/css/drawer.css" />
+  <link rel="preload" href="assets/data/name-glyphs.json" as="fetch" crossorigin />
+  <script>document.documentElement.classList.add('js');</script>
+  <style>
+    /* Loading screen: "javier" as an ambigram inside two turning arrows. The
+       right half of the mark is the left half turned 180 degrees, so the name
+       reads the same upside down; the stage spins steadily while the bar fills. */
+    #loader { position: fixed; inset: 0; z-index: 1000; display: none; place-items: center; background: var(--paper); transition: opacity 0.55s var(--ease), visibility 0.55s; }
+    .js #loader { display: grid; }
+    #loader.is-done { opacity: 0; visibility: hidden; pointer-events: none; }
+    .loader-box { display: grid; justify-items: center; gap: clamp(26px, 5vh, 44px); }
+    .loader-stage { position: relative; width: min(66vmin, 400px); aspect-ratio: 1; animation: ambigram 2.25s linear infinite; }
+    .loader-ring, .loader-mark { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
+    .loader-ring { color: var(--accent); }
+    .loader-mark { inset: 50% auto auto 50%; width: 86%; height: auto; transform: translate(-50%, -50%); color: var(--ink); }
+    .loader-label { font: 500 11px/1 var(--mono); letter-spacing: 0.5em; text-indent: 0.5em; text-transform: uppercase; color: var(--ink-2); }
+    .loader-bar { position: relative; width: min(60vw, 240px); height: 2px; background: var(--rule); overflow: hidden; }
+    .loader-bar i { position: absolute; inset: 0 auto 0 0; width: 0; background: var(--accent); animation: loader-fill 2s linear forwards; }
+    #loader.is-done .loader-bar i { animation: none; width: 100%; transition: width 0.25s linear; }
+    /* a steady spin: one full turn every 2.25 s */
+    @keyframes ambigram { to { transform: rotate(360deg); } }
+    @keyframes loader-fill { to { width: 100%; } }
+    /* The site switches animations off when the system asks for reduced motion
+       (base.css); the loading screen is exempt, so the name turns and the bar fills. */
+    #loader .loader-stage { animation-duration: 2.25s !important; animation-iteration-count: infinite !important; }
+    #loader .loader-bar i { animation-duration: 2s !important; animation-iteration-count: 1 !important; }
+    #loader { transition-duration: 0.55s !important; }
+  </style>
+  <script type="module" src="assets/js/main.js"></script>
+</head>
+<body>
+  <div id="loader" role="status" aria-label="Loading">
+    <div class="loader-box">
+      <div class="loader-stage">
+        <svg class="loader-ring" viewBox="0 0 400 400" aria-hidden="true">
+          <g id="loader-arrow" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round">
+            <path d="M28 120A190 190 0 0 1 372 120" />
+            <path d="M376 129L377 113L364 119Z" fill="currentColor" stroke-width="1.2" stroke-linejoin="round" />
+          </g>
+          <use href="#loader-arrow" transform="rotate(180 200 200)" />
+        </svg>
+        <svg class="loader-mark" viewBox="0 0 600 200" aria-hidden="true">
+          <g fill="none" stroke="currentColor" stroke-width="4.2" stroke-linecap="round" stroke-linejoin="round">
+            <g id="loader-half">
+              <path d="M90 58C90 92 90 116 87 126C83 138 72 142 58 142C42 142 30 135 26 120" />
+              <path d="M210 140V86C210 68 194 58 170 58C152 58 138 64 130 76" />
+              <path d="M210 104H136C128 104 124 111 124 120C124 133 140 142 160 142C182 142 198 136 210 124" />
+              <path d="M248 60L282 140L318 60" />
+              <circle cx="282" cy="168" r="4.5" stroke="none" style="fill: var(--accent)" />
+            </g>
+            <use href="#loader-half" transform="rotate(180 300 100)" />
+          </g>
+        </svg>
+      </div>
+      <p class="loader-label">Loading</p>
+      <div class="loader-bar" aria-hidden="true"><i></i></div>
+    </div>
+  </div>
+  <script>
+    /* Hold the loading screen for two seconds (the name turning and
+       a full bar), then release it once the page, the fonts and the data are in. */
+    (function () {
+      var el = document.getElementById('loader');
+      var root = document.documentElement;
+      var done;
+      window.__siteReady = new Promise(function (r) { done = r; });
+      if (!el || !root.classList.contains('js')) { done(); return; }
+      var MIN = 2000, MAX = 3200, t0 = Date.now();
+      var loaded = new Promise(function (r) {
+        if (document.readyState === 'complete') r(); else window.addEventListener('load', r);
+      }).then(function () { return document.fonts && document.fonts.ready; });
+      var cap = new Promise(function (r) { setTimeout(r, MAX); });
+      Promise.race([loaded, cap]).then(function () {
+        setTimeout(function () {
+          el.classList.add('is-done');
+          root.classList.remove('is-locked');
+          done();
+          setTimeout(function () { el.remove(); }, 800);
+        }, Math.max(0, MIN - (Date.now() - t0)));
+      });
+      root.classList.add('is-locked');
+    })();
+  </script>
+  <a class="skip" href="#about">Skip to content</a>
 
-							<!-- Nav -->
-								<nav>
-									<ul>
-										<li><a href="#menu">Menu</a></li>
-									</ul>
-								</nav>
+  <header class="topbar">
+    <a class="brand" href="#series" aria-label="Javier Perez Tobia, back to top">
+      <svg class="brand-mark" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9" /><circle cx="18.4" cy="5.6" r="3.2" /><circle cx="20.6" cy="3.6" r="1.4" class="fill" /></svg>
+      <span>Javier Perez Tobia</span>
+    </a>
+    <nav class="chapters" aria-label="Chapters">
+      <a data-nav href="#series"><span>01</span>Intro</a>
+      <a data-nav href="#paths"><span>02</span>Career</a>
+      <a data-nav href="#model"><span>03</span>Catalogue</a>
+      <a data-nav href="#card"><span>04</span>Résumé</a>
+      <a data-nav href="#next"><span>05</span>Contact</a>
+    </nav>
+    <p class="topbar-meta">
+      <span class="live" aria-hidden="true"></span>
+      <span class="hide-sm">Madrid</span>
+      <time data-clock>--:--</time>
+    </p>
+  </header>
 
-						</div>
-					</header>
+  <nav class="dock" aria-label="Explore" data-dock></nav>
 
-				<!-- Menu -->
-					<nav id="menu">
-						<h2>Menu</h2>
-						<ul>
-							<li><a href="index.html">Home</a></li>
-							<li><a href="machinelearning.html">Machine Learning</a></li>
-							<li><a href="quantumcomputing.html">Quantum Computing</a></li>
-							<li><a href="otherprojects.html">Other projects</a></li>
-							<li><a href="credentials.html">Credentials</a></li>
-							<li><a href="experience.html">Experience</a></li>
-						</ul>
-					</nav>
+  <main>
+    <!-- 01 · Intro -->
+    <section class="hero" id="series" data-chapter aria-labelledby="name">
+      <canvas class="hero-canvas" aria-hidden="true"></canvas>
+      <p class="eyebrow hero-eyebrow"><span data-scramble>[ 01 · Intro ]</span></p>
+      <label class="hero-harmonics">
+        <span class="label">harmonics</span>
+        <input type="range" min="0" max="14" step="0.01" value="14" aria-label="Number of Fourier harmonics" data-harmonics />
+      </label>
+      <h1 class="hero-name" id="name">Javier Perez Tobia</h1>
+      <div class="hero-foot">
+        <p class="hero-intro" data-reveal>
+          Applied AI &amp; machine-learning engineer. Physicist and mathematician by training, and a builder at heart. These days I build models that survive contact with the real world at <em>QuantumBlack, AI by McKinsey</em>. Outside work I love the outdoors, training, and the science of longevity and health.
+        </p>
+      </div>
+    </section>
 
-				<!-- Main -->
-					<div id="main">
-						<div class="inner">
-							<header>
-								<h1>Welcome!</h1>
-								<p>I am a fourth year Physics and Mathematics student at the University of British Columbia.
-								My main research interests are machine learning, with a focus on robustness and explainability, and quantum computing.
-								Some other fields I am very interested in and actively trying to learn more about are finance, bioengineering and sustainability.</p>
-							</header>
-							<section class="tiles">
-								<article class="style1">
-									<span class="image">
-										<img src="images/ml.jpg" alt="" />
-									</span>
-									<a href="machinelearning.html">
-										<h2>Machine Learning</h2>
-										<div class="content">
-											<p>-</p>
-										</div>
-									</a>
-								</article>
-								<article class="style2">
-									<span class="image">
-										<img src="images/ibmqc.png" alt="" />
-									</span>
-									<a href="quantumcomputing.html">
-										<h2>Quantum Computing</h2>
-										<div class="content">
-											<p>-</p>
-										</div>
-									</a>
-								</article>
-								<article class="style3">
-									<span class="image">
-										<img src="images/project.png" alt="" />
-									</span>
-									<a href="otherprojects.html">
-										<h2>Other projects</h2>
-										<div class="content">
-											<p>-</p>
-										</div>
-									</a>
-								</article>
-								<article class="style2">
-									<span class="image">
-										<img src="images/workexperience.jpg" alt="" />
-									</span>
-									<a href="experience.html">
-										<h2>Work Experience</h2>
-										<div class="content">
-											<p>-</p>
-										</div>
-									</a>
-								</article>
-								<article class="style4">
-									<span class="image">
-										<img src="images/gradhat.jpg" alt="" />
-									</span>
-									<a href="credentials.html">
-										<h2>Credentials</h2>
-										<div class="content">
-											<p>-</p>
-										</div>
-									</a>
-								</article>
-								</article>
-								<article class="style6">
-									<span class="image">
-										<img src="images/exploring.jpeg" alt="" />
-									</span>
-									<a href="exploring.html">
-										<h2>Exploring</h2>
-										<div class="content">
-											<p>-</p>
-										</div>
-									</a>
-								</article>
-								<article class="style5">
-									<span class="image">
-										<img src="images/bugaboo2.jpeg" alt="" />
-									</span>
-									<a href="gallery.html">
-										<h2>Gallery</h2>
-										<div class="content">
-											<p>-</p>
-										</div>
-									</a>
-								</article>
+    <!-- About -->
+    <section class="about" id="about" aria-label="About">
+      <div class="about-cols">
+        <div data-reveal>
+          <p class="label">Now</p>
+          <p><span class="lead">Senior Data Scientist I</span> at <strong>QuantumBlack, AI by McKinsey</strong> in Europe. ML forecasting, optimisation and LLM systems for energy, banking and telecom.</p>
+        </div>
+        <div data-reveal>
+          <p class="label">Before</p>
+          <p><span class="lead">Machine Learning Researcher</span> at <strong>UBC</strong>: adversarial robustness, biomolecular ML, time series and adaptive control. Five peer-reviewed publications.</p>
+        </div>
+        <div data-reveal>
+          <p class="label">Trained in</p>
+          <p><span class="lead">B.Sc. in Physics &amp; Mathematics</span>, University of British Columbia, with a 96.2% cumulative average.</p>
+        </div>
+      </div>
+    </section>
 
+    <!-- 02 · Career -->
+    <section class="paths" id="paths" data-chapter aria-labelledby="paths-title">
+      <div class="paths-sticky">
+        <header class="paths-head">
+          <p class="eyebrow"><span data-scramble>[ 02 · Career ]</span></p>
+          <h2 class="title" id="paths-title">My life path</h2>
+        </header>
+        <div class="paths-stage">
+          <div class="paths-plot">
+            <canvas aria-hidden="true"></canvas>
+            <p class="paths-hud">
+              <button class="btn btn--ghost btn--sm paths-replay" type="button" data-paths-replay>↺ replay</button>
+            </p>
+          </div>
+          <div class="paths-timeline"></div>
+        </div>
+      </div>
+    </section>
 
-							</section>
-						</div>
-					</div>
+    <div class="descent" aria-hidden="true">
+    </div>
 
-				<!-- Footer -->
-					<footer id="footer">
-						<div class="inner">
+    <!-- 03 · Catalogue -->
+    <section class="model" id="model" data-chapter aria-labelledby="model-title">
+      <div class="model-sticky">
+        <canvas aria-hidden="true"></canvas>
+        <div class="model-labels" role="group" aria-label="Neurons in the current layer"></div>
+        <aside class="model-side">
+          <header class="model-head">
+            <p class="eyebrow">[ 03 · Catalogue ]</p>
+            <h2 class="title" id="model-title">Projects, papers &amp;&nbsp;skills.</h2>
+            <p class="note">Scroll through the layers or pick one. Click any lit neuron to read it.</p>
+          </header>
+          <ol class="model-menu" aria-label="Layers"></ol>
+          <div class="model-detail" aria-live="polite"></div>
+        </aside>
+        <p class="model-outro" aria-hidden="true">→ the full résumé</p>
+      </div>
+    </section>
 
-							<section>
-								<h2>Get in touch</h2>
-								<ul class="icons">
-									<li><a href="https://twitter.com/javi_pereztobia" class="icon brands style2 fa-twitter"><span class="label">Twitter</span></a></li>
-									<li><a href="https://github.com/JavierPerez21" class="icon brands style2 fa-github"><span class="label">GitHub</span></a></li>
-									<li><a href="https://www.linkedin.com/in/javipt21/" class="icon brands style2 fa-linkedin"><span class="label">LinkedIn</span></a></li>
-									<li><a href="mailto:javierpereztobia@gmail.com" class="icon solid style2 fa-envelope"><span class="label">Email</span></a></li>
-								</ul>
-							</section>
-							<ul class="copyright">
-								<li>&copy; Untitled. All rights reserved</li><li>Design: <a href="http://html5up.net">HTML5 UP</a></li>
-							</ul>
-						</div>
-					</footer>
+    <!-- 04 · Résumé -->
+    <section class="card" id="card" data-chapter aria-labelledby="card-title">
+      <p class="eyebrow" data-scramble>[ 04 · Résumé ]</p>
+      <h2 class="title" id="card-title" data-reveal>The full résumé.</h2>
+      <div class="mc" data-modelcard data-rise></div>
+    </section>
 
-			</div>
+    <!-- 05 · Contact -->
+    <section class="next" id="next" data-chapter aria-labelledby="next-title">
+      <p class="eyebrow" data-scramble>[ 05 · Contact ]</p>
+      <h2 class="title title--xl" id="next-title" data-reveal>Let’s talk.</h2>
+      <ul class="contact-list">
+        <li><a href="assets/docs/javier-perez-tobia-resume.pdf" download="Javier-Perez-Tobia-Resume.pdf"><span class="c-name">Download résumé</span><span class="c-detail">PDF</span><span class="c-go" aria-hidden="true">↓</span></a></li>
+        <li><a href="https://www.linkedin.com/in/javipt21/" target="_blank" rel="noopener"><span class="c-name">LinkedIn</span><span class="c-detail">in/javipt21</span><span class="c-go" aria-hidden="true">↗</span></a></li>
+        <li><a href="https://scholar.google.com/citations?user=ZM0NiG8AAAAJ&amp;hl=en" target="_blank" rel="noopener"><span class="c-name">Google Scholar</span><span class="c-detail">publications and citations</span><span class="c-go" aria-hidden="true">↗</span></a></li>
+        <li><a href="https://github.com/JavierPerez21" target="_blank" rel="noopener"><span class="c-name">GitHub</span><span class="c-detail">JavierPerez21</span><span class="c-go" aria-hidden="true">↗</span></a></li>
+        <li><a href="mailto:javierpereztobia@gmail.com"><span class="c-name">Email</span><span class="c-detail">javierpereztobia@gmail.com</span><span class="c-go" aria-hidden="true">↗</span></a></li>
+        <li><a href="https://twitter.com/viperjaerez" target="_blank" rel="noopener"><span class="c-name">X</span><span class="c-detail">@viperjaerez</span><span class="c-go" aria-hidden="true">↗</span></a></li>
+      </ul>
 
-		<!-- Scripts -->
-			<script src="assets/js/jquery.min.js"></script>
-			<script src="assets/js/browser.min.js"></script>
-			<script src="assets/js/breakpoints.min.js"></script>
-			<script src="assets/js/util.js"></script>
-			<script src="assets/js/main.js"></script>
+      <a class="contact-more" href="explore/">
+        <span class="cm-text">
+          <span class="label">Beyond professional life</span>
+          <span class="cm-title">Hikes, ski tours &amp; mountains.</span>
+          <span class="cm-note">When I am not building models I am usually somewhere high up. A few photographs from the trails and summits.</span>
+          <span class="btn btn--accent">See the photos <span aria-hidden="true">→</span></span>
+        </span>
+        <span class="cm-photos" aria-hidden="true">
+          <img src="assets/img/explore/p0353-sm.webp" alt="" loading="lazy" decoding="async" />
+          <img src="assets/img/explore/p2987-sm.webp" alt="" loading="lazy" decoding="async" />
+          <img src="assets/img/explore/p0413-sm.webp" alt="" loading="lazy" decoding="async" />
+        </span>
+      </a>
+    </section>
+  </main>
 
-	</body>
+  <footer class="footer">
+    <p>© 2026 Javier Perez Tobia · Madrid</p>
+    <p>Hand-built with vanilla JS, a few FFTs and a lot of Brownian motion.</p>
+    <p><a href="llms.txt">Are you an AI agent? Read llms.txt</a></p>
+    <p>Last updated Nov 2026</p>
+  </footer>
+
+  <aside class="drawer" id="drawer" role="dialog" aria-modal="true" aria-labelledby="drawer-title" aria-hidden="true">
+    <div class="drawer-scrim" data-close></div>
+    <div class="drawer-panel" tabindex="-1">
+      <button class="drawer-close" type="button" data-close aria-label="Close panel"><span>esc</span> ✕</button>
+      <div class="drawer-body"></div>
+    </div>
+  </aside>
+</body>
 </html>
