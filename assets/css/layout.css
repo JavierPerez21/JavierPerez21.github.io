@@ -82,7 +82,7 @@
 }
 
 /* Overlay for the §01 → §02 fall (drawn by scenes/bridge.js). */
-.bridge-canvas { position: fixed; inset: 0; width: 100%; height: 100%; z-index: 30; pointer-events: none; }
+.bridge-canvas { position: fixed; inset: 0; width: 100%; height: 100%; z-index: 30; pointer-events: none; opacity: 0.5; }
 
 /* The floating "Explore" button, bottom right, and the links it fans out
    above itself (ui/dock.js). */

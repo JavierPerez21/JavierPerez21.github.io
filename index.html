@@ -42,7 +42,7 @@
     .loader-mark { inset: 50% auto auto 50%; width: 86%; height: auto; transform: translate(-50%, -50%); color: var(--ink); }
     .loader-label { font: 500 11px/1 var(--mono); letter-spacing: 0.5em; text-indent: 0.5em; text-transform: uppercase; color: var(--ink-2); }
     .loader-bar { position: relative; width: min(60vw, 240px); height: 2px; background: var(--rule); overflow: hidden; }
-    .loader-bar i { position: absolute; inset: 0 auto 0 0; width: 0; background: var(--accent); animation: loader-fill 2s linear forwards; }
+    .loader-bar i { position: absolute; inset: 0 auto 0 0; width: 0; background: var(--accent); animation: loader-fill 1.75s linear forwards; }
     #loader.is-done .loader-bar i { animation: none; width: 100%; transition: width 0.25s linear; }
     /* a steady spin: one full turn every 2.25 s */
     @keyframes ambigram { to { transform: rotate(360deg); } }
@@ -50,7 +50,7 @@
     /* The site switches animations off when the system asks for reduced motion
        (base.css); the loading screen is exempt, so the name turns and the bar fills. */
     #loader .loader-stage { animation-duration: 2.25s !important; animation-iteration-count: infinite !important; }
-    #loader .loader-bar i { animation-duration: 2s !important; animation-iteration-count: 1 !important; }
+    #loader .loader-bar i { animation-duration: 1.75s !important; animation-iteration-count: 1 !important; }
     #loader { transition-duration: 0.55s !important; }
   </style>
   <script type="module" src="assets/js/main.js"></script>
@@ -84,7 +84,7 @@
     </div>
   </div>
   <script>
-    /* Hold the loading screen for two seconds (the name turning and
+    /* Hold the loading screen for about a second and three quarters (the name turning and
        a full bar), then release it once the page, the fonts and the data are in. */
     (function () {
       var el = document.getElementById('loader');
@@ -92,7 +92,7 @@
       var done;
       window.__siteReady = new Promise(function (r) { done = r; });
       if (!el || !root.classList.contains('js')) { done(); return; }
-      var MIN = 2000, MAX = 3200, t0 = Date.now();
+      var MIN = 1750, MAX = 2800, t0 = Date.now();
       var loaded = new Promise(function (r) {
         if (document.readyState === 'complete') r(); else window.addEventListener('load', r);
       }).then(function () { return document.fonts && document.fonts.ready; });
