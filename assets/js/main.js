@@ -13,6 +13,7 @@ import { renderModelCard } from './ui/modelcard.js';
 import { initNav } from './ui/nav.js';
 import { initDock } from './ui/dock.js';
 import { initReveal } from './ui/reveal.js';
+import { initRise } from './ui/rise.js';
 import { el } from './lib/util.js';
 
 const $ = (s, root = document) => root.querySelector(s);
@@ -23,6 +24,7 @@ const safely = (name, fn) => {
 safely('nav', () => initNav(content.profile));
 safely('dock', () => initDock($('[data-dock]'), content.profile.dock));
 safely('reveal', () => initReveal());
+safely('rise', () => initRise());
 
 /* 02 · Monte Carlo paths (set up first: the Fourier pen lands on it) */
 const pathsSection = $('#paths');

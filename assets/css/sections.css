@@ -391,8 +391,11 @@
 .neuron--token[data-group='opt'] .neuron-inner { border-color: rgba(59, 91, 219, 0.35); }
 .neuron--token[data-group='eng'] .neuron-inner { border-color: rgba(43, 138, 78, 0.35); }
 
+/* As the last layer passes, the network dissolves into paper so the résumé follows without a cut. */
+.model-sticky::after { content: ''; position: absolute; inset: 0; z-index: 3; background: var(--paper); opacity: calc(var(--outro) * 0.92); transition: none; pointer-events: none; }
 .model-outro {
   position: absolute;
+  z-index: 4;
   inset: 0;
   display: grid;
   place-items: center;
@@ -497,11 +500,22 @@
 /* 04 · Model card                                                  */
 /* =============================================================== */
 .card, .next { background: var(--paper); color: var(--ink); }
-.card { padding: clamp(96px, 16vh, 180px) var(--pad) clamp(64px, 10vh, 120px); }
+/* The résumé slides up over the end of the pinned Catalogue instead of waiting for it to
+   finish, so there is no empty stretch between the two. */
+.card { position: relative; z-index: 32; margin-top: -52vh; padding: clamp(72px, 11vh, 130px) var(--pad) clamp(64px, 10vh, 120px); }
 .card > * { max-width: var(--maxw); margin-left: auto; margin-right: auto; }
 .card .title { margin-top: 20px; }
 
 .mc { margin-top: clamp(40px, 7vh, 72px); border: 1px solid var(--rule); border-radius: 18px; overflow: hidden; background: var(--paper-2); }
+/* The card rises out of the page as it scrolls in (ui/rise.js sets --rise from 0 to 1). */
+.js .mc[data-rise] {
+  transform-origin: 50% 0;
+  transform: translateY(calc((1 - var(--rise, 1)) * 90px)) scale(calc(0.93 + 0.07 * var(--rise, 1)));
+  opacity: calc(0.15 + 0.85 * var(--rise, 1));
+  box-shadow: 0 calc(10px + 36px * var(--rise, 1)) calc(20px + 50px * var(--rise, 1)) calc(-24px) rgba(18, 18, 18, calc(0.5 * var(--rise, 1)));
+  will-change: transform, opacity;
+  transition: none;
+}
 .mc-head {
   display: flex;
   flex-wrap: wrap;

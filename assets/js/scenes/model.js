@@ -288,7 +288,7 @@ export function insideModel({ section, canvas, labelsRoot, hud, layers, tokens, 
     const intro = 1 - smoother(invLerp(0, hold * 0.75, raw));
     introNow = intro;
     setVar('--intro', intro);
-    setVar('--outro', smoother(invLerp(0.93, 0.99, p)));
+    setVar('--outro', smoother(invLerp(0.89, 0.955, p)));
 
     const { ctx, w, h } = view;
     ctx.clearRect(0, 0, w, h);
